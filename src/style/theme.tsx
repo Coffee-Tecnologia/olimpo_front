@@ -18,7 +18,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       },
     },
     typography: {
-      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      fontFamily: '"Nunito", "Helvetica", "Arial", sans-serif',
     },
   });
 

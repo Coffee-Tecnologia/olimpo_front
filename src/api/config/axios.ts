@@ -41,11 +41,11 @@ export const ApiService = (path: string) => {
     return (await api.get<T>(`${path}${url}`, config)).data;
   };
 
-  const post = async <T>(url: string, data: T, config = {}) => {
+  const post = async <T, D = unknown>(url: string, data: D, config = {}) => {
     return (await api.post<T>(`${path}${url}`, data, config)).data;
   };
 
-  const put = async <T>(url: string, data: T, config = {}) => {
+  const put = async <T, D = unknown>(url: string, data: D, config = {}) => {
     return (await api.put<T>(`${path}${url}`, data, config)).data;
   };
 
