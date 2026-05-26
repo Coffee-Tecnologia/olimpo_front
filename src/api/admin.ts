@@ -199,6 +199,9 @@ export interface AdminSystem {
 export const getAdminSystems = () =>
   adminApi.get<AdminSystem[]>('/systems').then((r) => r.data);
 
+export const createAdminSystem = (slug: string, name: string) =>
+  adminApi.post<AdminSystem>('/systems', { slug, name }).then((r) => r.data);
+
 // ── Service Clients ───────────────────────────────────────────────────────────
 
 export interface ServiceClient {

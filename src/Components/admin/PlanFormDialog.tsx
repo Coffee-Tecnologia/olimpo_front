@@ -18,7 +18,7 @@ import Alert from '@mui/material/Alert';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { createAdminPlan, updateAdminPlan, AdminPlanFull, PlanPayload } from '@/api/admin';
+import { createAdminPlan, updateAdminPlan, AdminPlanFull, AdminSystem, PlanPayload } from '@/api/admin';
 
 const PLAN_NAMES = ['Degust', 'Starter', 'Pro', 'Enterprise'];
 
@@ -26,6 +26,7 @@ interface Props {
   open: boolean;
   plan: AdminPlanFull | null;
   defaultSystem: string;
+  systems: AdminSystem[];
   onClose: () => void;
   onSaved: () => void;
 }
@@ -42,7 +43,7 @@ const emptyForm = (): Omit<PlanPayload, 'features'> => ({
   active: true,
 });
 
-export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, onClose, onSaved }) => {
+export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, systems, onClose, onSaved }) => {
   const [form, setForm] = useState(emptyForm());
   const [features, setFeatures] = useState<FeatureEntry[]>([]);
   const [newFeature, setNewFeature] = useState<FeatureEntry>({ name: '', value: '' });
@@ -124,13 +125,19 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, onC
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
+              select
               label="Sistema"
               value={form.system}
               onChange={(e) => set('system', e.target.value)}
               fullWidth
-              placeholder="ex: compass, apollo"
-              helperText="Sistema novo = só digitar o nome"
-            />
+              disabled={!!plan}
+              SelectProps={{ native: true }}
+            >
+              <option value="" disabled>Selecione…</option>
+              {systems.filter((s) => s.active).map((s) => (
+                <option key={s.slug} value={s.slug}>{s.name}</option>
+              ))}
+            </TextField>
           </Grid>
           <Grid size={{ xs: 6 }}>
             <TextField

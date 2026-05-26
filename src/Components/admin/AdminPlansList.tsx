@@ -172,6 +172,11 @@ export const AdminPlansList: React.FC = () => {
         open={dialogOpen}
         plan={editing}
         defaultSystem={defaultSystem}
+        systems={
+          Object.values(systemNames).length > 0
+            ? Object.entries(systemNames).map(([slug, name]) => ({ id: '', slug, name, active: true }))
+            : []
+        }
         onClose={() => setDialogOpen(false)}
         onSaved={() => { setDialogOpen(false); load(); }}
       />
