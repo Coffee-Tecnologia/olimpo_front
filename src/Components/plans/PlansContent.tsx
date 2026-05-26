@@ -15,7 +15,11 @@ const PLAN_ORDER = ['Degust', 'Starter', 'Pro', 'Enterprise'] as const;
 const sortPlans = (plans: Plan[]) =>
   [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.name as typeof PLAN_ORDER[number]) - PLAN_ORDER.indexOf(b.name as typeof PLAN_ORDER[number]));
 
-export const PlansContent: React.FC = () => {
+interface PlansContentProps {
+  system: string;
+}
+
+export const PlansContent: React.FC<PlansContentProps> = ({ system }) => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [loading, setLoading] = useState(true);
@@ -24,11 +28,11 @@ export const PlansContent: React.FC = () => {
   const [subscribeError, setSubscribeError] = useState<string | null>(null);
 
   useEffect(() => {
-    getPlans()
+    getPlans(system)
       .then((data) => setPlans(sortPlans(data)))
       .catch(() => setFetchError('Não foi possível carregar os planos. Tente novamente.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [system]);
 
   const handleSubscribe = async (planId: string) => {
     setSubscribingPlanId(planId);

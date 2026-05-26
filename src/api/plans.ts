@@ -25,7 +25,7 @@ export type BillingCycle = 'monthly' | 'annual';
 const plansApi = ApiService('/plans');
 const subscriptionsApi = ApiService('/subscriptions');
 
-export const getPlans = () => plansApi.get<Plan[]>('');
+export const getPlans = (system: string) => plansApi.get<Plan[]>('', { params: { system } });
 
 export const createSubscription = (planId: string, billingCycle: BillingCycle) =>
   subscriptionsApi.post<SubscriptionResponse>('', { planId, billingCycle });

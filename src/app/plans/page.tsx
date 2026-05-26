@@ -4,6 +4,13 @@ export const metadata = {
   title: 'Planos — Olimpo',
 };
 
-export default function PlansPage() {
-  return <PlansContent />;
+interface PlansPageProps {
+  searchParams: Promise<{ system?: string }>;
+}
+
+export default async function PlansPage({ searchParams }: PlansPageProps) {
+  const { system } = await searchParams;
+  const resolvedSystem = system ?? process.env.NEXT_PUBLIC_SYSTEM ?? '';
+
+  return <PlansContent system={resolvedSystem} />;
 }
