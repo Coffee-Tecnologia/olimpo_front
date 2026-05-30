@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import Alert from '@mui/material/Alert';
 
-import { Plan, BillingCycle, getPlans, createSubscription } from '@/api/plans';
+import { Plan, BillingCycle, getPlans, createCheckout } from '@/api/plans';
 import { BillingToggle } from './BillingToggle';
 import { PlanCard } from './PlanCard';
 import { PlansSkeleton } from './PlansSkeleton';
@@ -17,9 +17,10 @@ const sortPlans = (plans: Plan[]) =>
 
 interface PlansContentProps {
   system: string;
+  token: string;
 }
 
-export const PlansContent: React.FC<PlansContentProps> = ({ system }) => {
+export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [loading, setLoading] = useState(true);
@@ -42,7 +43,7 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system }) => {
     const cycle = plan?.name === 'Degust' ? 'monthly' : billingCycle;
 
     try {
-      const { checkoutUrl } = await createSubscription(planId, cycle);
+      const { checkoutUrl } = await createCheckout(token, planId, cycle);
       window.location.href = checkoutUrl;
     } catch {
       setSubscribeError('Erro ao iniciar assinatura. Tente novamente.');

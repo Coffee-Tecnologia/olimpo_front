@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -15,8 +15,17 @@ interface SuccessContentProps {
   sessionId: string | null;
 }
 
+const SYSTEM_URLS: Record<string, string | undefined> = {
+  apollo:     process.env.NEXT_PUBLIC_APOLLO_URL,
+  compass:    process.env.NEXT_PUBLIC_COMPASS_URL,
+  cerimonial: process.env.NEXT_PUBLIC_CERIMONIAL_URL,
+};
+
 export const SuccessContent: React.FC<SuccessContentProps> = ({ sessionId }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const system = searchParams.get('system') ?? '';
+  const returnUrl = SYSTEM_URLS[system] ?? '/';
   const [countdown, setCountdown] = useState(REDIRECT_SECONDS);
 
   useEffect(() => {
@@ -29,7 +38,7 @@ export const SuccessContent: React.FC<SuccessContentProps> = ({ sessionId }) => 
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          router.push('/');
+          window.location.href = returnUrl;
           return 0;
         }
         return prev - 1;
@@ -37,7 +46,7 @@ export const SuccessContent: React.FC<SuccessContentProps> = ({ sessionId }) => 
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [sessionId, router]);
+  }, [sessionId, returnUrl]);
 
   if (!sessionId) return null;
 
@@ -91,7 +100,7 @@ export const SuccessContent: React.FC<SuccessContentProps> = ({ sessionId }) => 
         variant="contained"
         color="primary"
         size="large"
-        onClick={() => router.push('/')}
+        onClick={() => { window.location.href = returnUrl; }}
         sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 600 }}
       >
         Ir para o painel agora

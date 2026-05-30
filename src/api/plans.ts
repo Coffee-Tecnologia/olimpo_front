@@ -23,9 +23,9 @@ export interface SubscriptionResponse {
 export type BillingCycle = 'monthly' | 'annual';
 
 const plansApi = ApiService('/plans');
-const subscriptionsApi = ApiService('/subscriptions');
+const checkoutApi = ApiService('/checkout');
 
 export const getPlans = (system: string) => plansApi.get<Plan[]>('', { params: { system } });
 
-export const createSubscription = (planId: string, billingCycle: BillingCycle) =>
-  subscriptionsApi.post<SubscriptionResponse>('', { planId, billingCycle });
+export const createCheckout = (token: string, planId: string, billingCycle: BillingCycle) =>
+  checkoutApi.post<SubscriptionResponse>('', { token, planId, billingCycle });
