@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { SuccessContent } from '@/Components/plans/SuccessContent';
 
 export const metadata = {

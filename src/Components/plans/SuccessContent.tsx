@@ -15,17 +15,10 @@ interface SuccessContentProps {
   sessionId: string | null;
 }
 
-const SYSTEM_URLS: Record<string, string | undefined> = {
-  apollo:     process.env.NEXT_PUBLIC_APOLLO_URL,
-  compass:    process.env.NEXT_PUBLIC_COMPASS_URL,
-  cerimonial: process.env.NEXT_PUBLIC_CERIMONIAL_URL,
-};
-
 export const SuccessContent: React.FC<SuccessContentProps> = ({ sessionId }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const system = searchParams.get('system') ?? '';
-  const returnUrl = SYSTEM_URLS[system] ?? '/';
+  const returnUrl = searchParams.get('return_url') ?? '/';
   const [countdown, setCountdown] = useState(REDIRECT_SECONDS);
 
   useEffect(() => {
