@@ -1,28 +1,27 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import cookies from 'js-cookie';
+import { useState } from 'react';
 
+import { ADMIN_TOKEN_KEY } from '@/api/admin';
+import AppsIcon from '@mui/icons-material/Apps';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import LayersIcon from '@mui/icons-material/Layers';
+import LogoutIcon from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
+import PeopleIcon from '@mui/icons-material/People';
+import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import PeopleIcon from '@mui/icons-material/People';
-import LayersIcon from '@mui/icons-material/Layers';
-import AppsIcon from '@mui/icons-material/Apps';
-import LogoutIcon from '@mui/icons-material/Logout';
-import MenuIcon from '@mui/icons-material/Menu';
-import Divider from '@mui/material/Divider';
-
-import { ADMIN_TOKEN_KEY } from '@/api/admin';
+import cookies from 'js-cookie';
 
 const DRAWER_WIDTH = 240;
 
@@ -60,7 +59,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <ListItemButton
             key={href}
             selected={pathname === href}
-            onClick={() => { router.push(href); setMobileOpen(false); }}
+            onClick={() => {
+              router.push(href);
+              setMobileOpen(false);
+            }}
           >
             <ListItemIcon>{icon}</ListItemIcon>
             <ListItemText primary={label} />
@@ -70,7 +72,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       <Divider />
       <List>
         <ListItemButton onClick={handleLogout}>
-          <ListItemIcon><LogoutIcon /></ListItemIcon>
+          <ListItemIcon>
+            <LogoutIcon />
+          </ListItemIcon>
           <ListItemText primary="Sair" />
         </ListItemButton>
       </List>

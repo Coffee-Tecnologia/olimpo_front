@@ -1,18 +1,17 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import cookies from 'js-cookie';
+import { useState } from 'react';
 
+import { adminLogin, ADMIN_TOKEN_KEY } from '@/api/admin';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
-
-import { adminLogin, ADMIN_TOKEN_KEY } from '@/api/admin';
+import cookies from 'js-cookie';
 
 export const AdminLoginForm: React.FC = () => {
   const router = useRouter();
@@ -38,7 +37,9 @@ export const AdminLoginForm: React.FC = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f5f5f5' }}>
+    <Box
+      sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f5f5f5' }}
+    >
       <Card sx={{ width: '100%', maxWidth: 400, p: 2 }}>
         <CardContent>
           <Typography variant="h5" fontWeight={700} mb={1}>
@@ -48,7 +49,11 @@ export const AdminLoginForm: React.FC = () => {
             Acesso restrito à equipe interna.
           </Typography>
 
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
 
           <Box component="form" onSubmit={handleSubmit} display="flex" flexDirection="column" gap={2}>
             <TextField

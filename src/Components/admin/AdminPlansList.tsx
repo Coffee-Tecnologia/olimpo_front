@@ -2,29 +2,36 @@
 
 import { useEffect, useState } from 'react';
 
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import Chip from '@mui/material/Chip';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Alert from '@mui/material/Alert';
-import Skeleton from '@mui/material/Skeleton';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {
+  getAdminPlans,
+  togglePlanActive,
+  getAdminSystems,
+  AdminPlanFull,
+  AdminPlansBySystem,
+  AdminSystem,
+} from '@/api/admin';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import Skeleton from '@mui/material/Skeleton';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import { getAdminPlans, togglePlanActive, getAdminSystems, AdminPlanFull, AdminPlansBySystem, AdminSystem } from '@/api/admin';
 import { PlanFormDialog } from './PlanFormDialog';
 
 export const AdminPlansList: React.FC = () => {
@@ -47,7 +54,9 @@ export const AdminPlansList: React.FC = () => {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const handleToggle = async (plan: AdminPlanFull) => {
     await togglePlanActive(plan.id, !plan.active);
@@ -71,13 +80,19 @@ export const AdminPlansList: React.FC = () => {
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5" fontWeight={700}>Planos</Typography>
+        <Typography variant="h5" fontWeight={700}>
+          Planos
+        </Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => openNew()}>
           Novo plano
         </Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       {loading ? (
         <Skeleton variant="rectangular" height={200} />
@@ -96,7 +111,10 @@ export const AdminPlansList: React.FC = () => {
                   <Button
                     size="small"
                     startIcon={<AddIcon />}
-                    onClick={(e) => { e.stopPropagation(); openNew(system); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openNew(system);
+                    }}
                   >
                     Adicionar plano
                   </Button>
@@ -121,7 +139,9 @@ export const AdminPlansList: React.FC = () => {
                   {plansBySystem[system].map((plan) => (
                     <TableRow key={plan.id} sx={{ opacity: plan.active ? 1 : 0.5 }}>
                       <TableCell>
-                        <Typography variant="body2" fontWeight={600}>{plan.name}</Typography>
+                        <Typography variant="body2" fontWeight={600}>
+                          {plan.name}
+                        </Typography>
                       </TableCell>
                       <TableCell align="right">{plan.maxCnpjs}</TableCell>
                       <TableCell align="right">{plan.maxUsers}</TableCell>
@@ -154,7 +174,11 @@ export const AdminPlansList: React.FC = () => {
                           </IconButton>
                         </Tooltip>
                         <Tooltip title={plan.active ? 'Desativar' : 'Ativar'}>
-                          <IconButton size="small" color={plan.active ? 'error' : 'success'} onClick={() => handleToggle(plan)}>
+                          <IconButton
+                            size="small"
+                            color={plan.active ? 'error' : 'success'}
+                            onClick={() => handleToggle(plan)}
+                          >
                             {plan.active ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
                           </IconButton>
                         </Tooltip>
@@ -178,7 +202,10 @@ export const AdminPlansList: React.FC = () => {
             : []
         }
         onClose={() => setDialogOpen(false)}
-        onSaved={() => { setDialogOpen(false); load(); }}
+        onSaved={() => {
+          setDialogOpen(false);
+          load();
+        }}
       />
     </Box>
   );

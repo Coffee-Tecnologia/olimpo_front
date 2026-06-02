@@ -134,8 +134,7 @@ export const AdminSystemsList: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const formatDate = (iso: string | null) =>
-    iso ? new Date(iso).toLocaleString('pt-BR') : '—';
+  const formatDate = (iso: string | null) => (iso ? new Date(iso).toLocaleString('pt-BR') : '—');
 
   return (
     <Box>
@@ -148,7 +147,11 @@ export const AdminSystemsList: React.FC = () => {
         </Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       {loading ? (
         <Skeleton variant="rectangular" height={200} />

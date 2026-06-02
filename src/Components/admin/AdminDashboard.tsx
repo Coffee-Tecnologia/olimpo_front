@@ -2,21 +2,21 @@
 
 import { useEffect, useState } from 'react';
 
-import Grid from '@mui/material/Grid';
+import { getAdminDashboard, DashboardResponse } from '@/api/admin';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Skeleton from '@mui/material/Skeleton';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Alert from '@mui/material/Alert';
-import Skeleton from '@mui/material/Skeleton';
-import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
-import { getAdminDashboard, DashboardResponse } from '@/api/admin';
 import { StatusChip } from './StatusChip';
 
 export const AdminDashboard: React.FC = () => {
@@ -33,7 +33,9 @@ export const AdminDashboard: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight={700} mb={3}>Dashboard</Typography>
+      <Typography variant="h5" fontWeight={700} mb={3}>
+        Dashboard
+      </Typography>
 
       <Grid container spacing={2} mb={4}>
         {[
@@ -45,9 +47,13 @@ export const AdminDashboard: React.FC = () => {
           <Grid size={{ xs: 6, sm: 3 }} key={label}>
             <Card>
               <CardContent>
-                <Typography variant="body2" color="text.secondary">{label}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {label}
+                </Typography>
                 {data ? (
-                  <Typography variant="h4" fontWeight={700} color={color}>{value}</Typography>
+                  <Typography variant="h4" fontWeight={700} color={color}>
+                    {value}
+                  </Typography>
                 ) : (
                   <Skeleton variant="text" width={60} height={56} />
                 )}
@@ -61,7 +67,9 @@ export const AdminDashboard: React.FC = () => {
         <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6" fontWeight={600} mb={2}>Por sistema</Typography>
+              <Typography variant="h6" fontWeight={600} mb={2}>
+                Por sistema
+              </Typography>
               {data ? (
                 <Table size="small">
                   <TableHead>
@@ -73,13 +81,17 @@ export const AdminDashboard: React.FC = () => {
                   <TableBody>
                     {data.bySystem.map(({ system, count }) => (
                       <TableRow key={system}>
-                        <TableCell><Chip label={system} size="small" /></TableCell>
+                        <TableCell>
+                          <Chip label={system} size="small" />
+                        </TableCell>
                         <TableCell align="right">{count}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-              ) : <Skeleton variant="rectangular" height={120} />}
+              ) : (
+                <Skeleton variant="rectangular" height={120} />
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -87,7 +99,9 @@ export const AdminDashboard: React.FC = () => {
         <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6" fontWeight={600} mb={2}>Por plano</Typography>
+              <Typography variant="h6" fontWeight={600} mb={2}>
+                Por plano
+              </Typography>
               {data ? (
                 <Table size="small">
                   <TableHead>
@@ -101,13 +115,17 @@ export const AdminDashboard: React.FC = () => {
                     {data.byPlan.map(({ plan, system, count }) => (
                       <TableRow key={`${plan}-${system}`}>
                         <TableCell>{plan}</TableCell>
-                        <TableCell><Chip label={system} size="small" /></TableCell>
+                        <TableCell>
+                          <Chip label={system} size="small" />
+                        </TableCell>
                         <TableCell align="right">{count}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-              ) : <Skeleton variant="rectangular" height={120} />}
+              ) : (
+                <Skeleton variant="rectangular" height={120} />
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -120,7 +138,9 @@ export const AdminDashboard: React.FC = () => {
               </Typography>
               {data ? (
                 data.expiringSoon.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary">Nenhuma conta expirando em breve.</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Nenhuma conta expirando em breve.
+                  </Typography>
                 ) : (
                   <Table size="small">
                     <TableHead>
@@ -136,19 +156,31 @@ export const AdminDashboard: React.FC = () => {
                       {data.expiringSoon.map((a) => (
                         <TableRow key={a.id}>
                           <TableCell>
-                            <Typography variant="body2" fontWeight={600}>{a.name}</Typography>
-                            <Typography variant="caption" color="text.secondary">{a.email}</Typography>
+                            <Typography variant="body2" fontWeight={600}>
+                              {a.name}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {a.email}
+                            </Typography>
                           </TableCell>
-                          <TableCell><Chip label={a.system} size="small" /></TableCell>
+                          <TableCell>
+                            <Chip label={a.system} size="small" />
+                          </TableCell>
                           <TableCell>{a.plan}</TableCell>
-                          <TableCell><StatusChip status={a.status} /></TableCell>
-                          <TableCell>{a.currentPeriodEnd ? new Date(a.currentPeriodEnd).toLocaleDateString('pt-BR') : '—'}</TableCell>
+                          <TableCell>
+                            <StatusChip status={a.status} />
+                          </TableCell>
+                          <TableCell>
+                            {a.currentPeriodEnd ? new Date(a.currentPeriodEnd).toLocaleDateString('pt-BR') : '—'}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 )
-              ) : <Skeleton variant="rectangular" height={100} />}
+              ) : (
+                <Skeleton variant="rectangular" height={100} />
+              )}
             </CardContent>
           </Card>
         </Grid>

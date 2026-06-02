@@ -1,28 +1,28 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import TablePagination from '@mui/material/TablePagination';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import Chip from '@mui/material/Chip';
-import IconButton from '@mui/material/IconButton';
-import Alert from '@mui/material/Alert';
-import Skeleton from '@mui/material/Skeleton';
-import Tooltip from '@mui/material/Tooltip';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import BlockIcon from '@mui/icons-material/Block';
+import { useEffect, useState, useCallback } from 'react';
 
 import { getAdminAccounts, activateAccount, deactivateAccount, AdminAccount, AccountFilters } from '@/api/admin';
+import BlockIcon from '@mui/icons-material/Block';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Skeleton from '@mui/material/Skeleton';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+
 import { StatusChip } from './StatusChip';
 
 const SYSTEMS = ['', 'compass', 'apollo', 'cerimonial'];
@@ -49,7 +49,9 @@ export const AdminAccountsList: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { load(filters); }, [filters, load]);
+  useEffect(() => {
+    load(filters);
+  }, [filters, load]);
 
   const handleFilter = (key: keyof AccountFilters, value: string) => {
     setFilters((f) => ({ ...f, [key]: value || undefined, page: 1 }));
@@ -73,7 +75,9 @@ export const AdminAccountsList: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h5" fontWeight={700} mb={3}>Contas</Typography>
+      <Typography variant="h5" fontWeight={700} mb={3}>
+        Contas
+      </Typography>
 
       <Box display="flex" gap={2} mb={3} flexWrap="wrap">
         <TextField
@@ -91,7 +95,11 @@ export const AdminAccountsList: React.FC = () => {
           onChange={(e) => handleFilter('system', e.target.value)}
           sx={{ minWidth: 140 }}
         >
-          {SYSTEMS.map((s) => <MenuItem key={s} value={s}>{s || 'Todos'}</MenuItem>)}
+          {SYSTEMS.map((s) => (
+            <MenuItem key={s} value={s}>
+              {s || 'Todos'}
+            </MenuItem>
+          ))}
         </TextField>
         <TextField
           select
@@ -101,11 +109,19 @@ export const AdminAccountsList: React.FC = () => {
           onChange={(e) => handleFilter('status', e.target.value)}
           sx={{ minWidth: 140 }}
         >
-          {STATUSES.map((s) => <MenuItem key={s} value={s}>{s || 'Todos'}</MenuItem>)}
+          {STATUSES.map((s) => (
+            <MenuItem key={s} value={s}>
+              {s || 'Todos'}
+            </MenuItem>
+          ))}
         </TextField>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <Table>
         <TableHead>
@@ -124,26 +140,32 @@ export const AdminAccountsList: React.FC = () => {
             ? Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
                   {Array.from({ length: 7 }).map((__, j) => (
-                    <TableCell key={j}><Skeleton /></TableCell>
+                    <TableCell key={j}>
+                      <Skeleton />
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
             : accounts.map((account) => (
                 <TableRow key={account.id} hover>
                   <TableCell>
-                    <Typography variant="body2" fontWeight={600}>{account.name}</Typography>
-                    <Typography variant="caption" color="text.secondary">{account.email}</Typography>
+                    <Typography variant="body2" fontWeight={600}>
+                      {account.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {account.email}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     <Chip label={account.plan.system} size="small" />
                   </TableCell>
                   <TableCell>{account.plan.name}</TableCell>
-                  <TableCell><StatusChip status={account.status} /></TableCell>
+                  <TableCell>
+                    <StatusChip status={account.status} />
+                  </TableCell>
                   <TableCell align="right">{account.userCount}</TableCell>
                   <TableCell>
-                    {account.currentPeriodEnd
-                      ? new Date(account.currentPeriodEnd).toLocaleDateString('pt-BR')
-                      : '—'}
+                    {account.currentPeriodEnd ? new Date(account.currentPeriodEnd).toLocaleDateString('pt-BR') : '—'}
                   </TableCell>
                   <TableCell align="center">
                     <Tooltip title="Ver detalhes">

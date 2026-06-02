@@ -1,28 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import Alert from '@mui/material/Alert';
-import Skeleton from '@mui/material/Skeleton';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   getAdminAccount,
@@ -30,26 +9,52 @@ import {
   deactivateAccount,
   upsertFeatureOverride,
   deleteFeatureOverride,
-  AdminAccountDetail,
+  type AdminAccountDetail as AdminAccountDetailData,
+  type FeatureOverride,
 } from '@/api/admin';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Skeleton from '@mui/material/Skeleton';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+
 import { StatusChip } from './StatusChip';
 
-interface Props { accountId: string }
+interface Props {
+  accountId: string;
+}
 
 export const AdminAccountDetail: React.FC<Props> = ({ accountId }) => {
   const router = useRouter();
-  const [account, setAccount] = useState<AdminAccountDetail | null>(null);
+  const [account, setAccount] = useState<AdminAccountDetailData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [newFeature, setNewFeature] = useState({ featureName: '', value: '' });
   const [saving, setSaving] = useState(false);
 
-  const load = () => {
+  const load = useCallback(() => {
     getAdminAccount(accountId)
       .then(setAccount)
       .catch(() => setError('Erro ao carregar conta.'));
-  };
+  }, [accountId]);
 
-  useEffect(() => { load(); }, [accountId]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const handleActivate = async () => {
     await activateAccount(accountId);
@@ -95,8 +100,12 @@ export const AdminAccountDetail: React.FC<Props> = ({ accountId }) => {
               <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
                   <Box>
-                    <Typography variant="h6" fontWeight={700}>{account.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">{account.email}</Typography>
+                    <Typography variant="h6" fontWeight={700}>
+                      {account.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {account.email}
+                    </Typography>
                   </Box>
                   <StatusChip status={account.status} />
                 </Box>
@@ -114,12 +123,16 @@ export const AdminAccountDetail: React.FC<Props> = ({ accountId }) => {
                       label: 'Expira em',
                       value: account.currentPeriodEnd
                         ? new Date(account.currentPeriodEnd).toLocaleDateString('pt-BR')
-                        : '—'
+                        : '—',
                     },
                   ].map(({ label, value }) => (
                     <Grid size={{ xs: 6 }} key={label}>
-                      <Typography variant="caption" color="text.secondary">{label}</Typography>
-                      <Typography variant="body2" fontWeight={500}>{value}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {label}
+                      </Typography>
+                      <Typography variant="body2" fontWeight={500}>
+                        {value}
+                      </Typography>
                     </Grid>
                   ))}
                 </Grid>
@@ -144,7 +157,9 @@ export const AdminAccountDetail: React.FC<Props> = ({ accountId }) => {
           <Grid size={{ xs: 12, md: 6 }}>
             <Card>
               <CardContent>
-                <Typography variant="h6" fontWeight={600} mb={2}>Feature Overrides</Typography>
+                <Typography variant="h6" fontWeight={600} mb={2}>
+                  Feature Overrides
+                </Typography>
                 <Typography variant="caption" color="text.secondary" display="block" mb={2}>
                   Sobrescreve o comportamento padrão do plano para esta conta.
                 </Typography>
@@ -161,20 +176,26 @@ export const AdminAccountDetail: React.FC<Props> = ({ accountId }) => {
                     {account.featureOverrides.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={3}>
-                          <Typography variant="caption" color="text.secondary">Nenhum override configurado.</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Nenhum override configurado.
+                          </Typography>
                         </TableCell>
                       </TableRow>
-                    ) : account.featureOverrides.map((o) => (
-                      <TableRow key={o.id}>
-                        <TableCell>{o.featureName}</TableCell>
-                        <TableCell><Chip label={o.value} size="small" /></TableCell>
-                        <TableCell align="right">
-                          <IconButton size="small" color="error" onClick={() => handleDeleteOverride(o.id)}>
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    ) : (
+                      account.featureOverrides.map((o: FeatureOverride) => (
+                        <TableRow key={o.id}>
+                          <TableCell>{o.featureName}</TableCell>
+                          <TableCell>
+                            <Chip label={o.value} size="small" />
+                          </TableCell>
+                          <TableCell align="right">
+                            <IconButton size="small" color="error" onClick={() => handleDeleteOverride(o.id)}>
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                     <TableRow>
                       <TableCell>
                         <TextField
