@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "next dev --port 3333",
     "build": "next build",
+    "build:homolog": "cp .env.homolog .env.production.local && next build",
+    "build:prod": "rm -f .env.production.local && next build",
     "start": "next start",
+    "start:homolog": "cp .env.homolog .env.production.local && next start",
+    "start:prod": "rm -f .env.production.local && next start",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
