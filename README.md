@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Olimpo — Front-end
 
-## Getting Started
+Interface do servidor de licenciamento da Coffee Tecnologia. Exibe os planos disponíveis por sistema, processa o checkout via Stripe e gerencia o fluxo de handoff para sistemas externos (Apollo, Compass, Cerimonial).
 
-First, run the development server:
+## Stack
+
+- **Next.js** 15 (App Router)
+- **React** 19
+- **TypeScript**
+- **MUI** 7 (Material UI)
+- **Axios** + axios-case-converter
+- **SASS** (estilos)
+- **pnpm** (gerenciador de pacotes)
+
+## Configuração local
+
+### Pré-requisitos
+
+- Node.js 20+
+- pnpm (`npm install -g pnpm`)
+- Back-end Olimpo rodando na porta 3000
+
+### Instalação
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone git@github.com:Coffee-Tecnologia/olimpo_front.git
+cd olimpo_front
+pnpm install
+cp .env.example .env.local   # preencher variáveis
+pnpm dev                      # sobe na porta 3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Variáveis de ambiente (`.env.local`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```dotenv
+NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_API_TIMEOUT=10000
+NEXT_PUBLIC_SYSTEM=apollo     # sistema padrão (apollo | compass | cerimonial)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Fluxo principal — checkout
 
-## Learn More
+O front recebe usuários redirecionados pelos sistemas integrados via handoff token:
 
-To learn more about Next.js, take a look at the following resources:
+```
+Sistema externo (ex: Apollo)
+  → gera JWT handoff (15 min, assinado com OLIMPO_HANDOFF_SECRET)
+  → redireciona para /plans?system=apollo&t=<token>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+/plans (Olimpo front)
+  → exibe planos do sistema via GET /api/v1/plans?system=apollo
+  → usuário escolhe plano
+  → POST /api/v1/checkout { token, planId, billingCycle }
+  → recebe { checkoutUrl } e redireciona ao Stripe
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+```bash
+pnpm dev          # desenvolvimento (porta 3001)
+pnpm build        # build de produção
+pnpm start        # serve o build
+pnpm lint         # ESLint
+pnpm format       # Prettier (escreve)
+pnpm format:check # Prettier (valida)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Planos disponíveis (sistema Apollo)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Plano | Valor | Tipo |
+|-------|-------|------|
+| Degust | R$ 250 | one-time |
+| Starter | R$ 199,99/mês | recorrente |
+| Pro | R$ 299/mês | recorrente |
+| Enterprise | R$ 399/mês | recorrente |
+
+## Deploy
+
+O deploy é **manual** (sem CI/CD por enquanto), executado no servidor via SSH.
+
+### Ambientes
+
+| Processo PM2 | Porta | Branch | Domínio |
+|--------------|-------|--------|---------|
+| `olimpo_front_production` | 3000 | `main` | `olimpo.coffeetecnologia.com.br` |
+| `olimpo_front_homolog` | 3001 | `homolog` | `homolog-olimpo.coffeetecnologia.com.br` |
+
+### Comandos de deploy (no servidor)
+
+```bash
+cd ~/apps/olimpo/front
+git pull origin main
+pnpm install
+pnpm build
+pm2 restart olimpo_front_production
+```
+
+### PM2 — comandos úteis
+
+```bash
+pm2 status
+pm2 restart olimpo_front_production
+pm2 restart olimpo_front_homolog
+pm2 logs olimpo_front_production
+```
+
+O PM2 é configurado via `~/apps/ecosystem.config.js` e sobe automaticamente no boot do servidor.
+
+## Infraestrutura do servidor
+
+- **VPS:** Ubuntu 22.04, IP `2.25.159.145`, usuário `olimpo`
+- **Node.js:** 20 via NVM
+- **PM2:** gerencia os dois processos front
+- **Nginx:** roteia `/` → Next.js porta 3000 (prod) ou 3001 (homolog)
+- **SSL:** Certbot (Let's Encrypt)
+
+**Importante:** usar `pnpm install` (não `npm install`) — o projeto usa pnpm como gerenciador de pacotes.
