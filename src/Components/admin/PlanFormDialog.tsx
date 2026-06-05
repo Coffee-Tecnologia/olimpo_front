@@ -2,25 +2,23 @@
 
 import { useEffect, useState } from 'react';
 
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions'; 
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField'; 
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
-import Alert from '@mui/material/Alert';
+import { createAdminPlan, updateAdminPlan, AdminPlanFull, AdminSystem, PlanPayload } from '@/api/admin';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-import { createAdminPlan, updateAdminPlan, AdminPlanFull, AdminSystem, PlanPayload } from '@/api/admin';
-
-const PLAN_NAMES = ['Degust', 'Starter', 'Pro', 'Enterprise'];
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 interface Props {
   open: boolean;
@@ -34,7 +32,7 @@ interface Props {
 type FeatureEntry = { name: string; value: string };
 
 const emptyForm = (): Omit<PlanPayload, 'features'> => ({
-  name: 'Starter',
+  name: '',
   system: '',
   maxCnpjs: 2,
   maxUsers: 5,
@@ -71,8 +69,7 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
     setError(null);
   }, [open, plan, defaultSystem]);
 
-  const set = (key: keyof typeof form, value: unknown) =>
-    setForm((f) => ({ ...f, [key]: value }));
+  const set = (key: keyof typeof form, value: unknown) => setForm((f) => ({ ...f, [key]: value }));
 
   const addFeature = () => {
     if (!newFeature.name || !newFeature.value) return;
@@ -80,8 +77,7 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
     setNewFeature({ name: '', value: '' });
   };
 
-  const removeFeature = (name: string) =>
-    setFeatures((fs) => fs.filter((f) => f.name !== name));
+  const removeFeature = (name: string) => setFeatures((fs) => fs.filter((f) => f.name !== name));
 
   const handleSave = async () => {
     setSaving(true);
@@ -108,20 +104,20 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>{plan ? `Editar ${plan.name} (${plan.system})` : 'Novo plano'}</DialogTitle>
       <DialogContent dividers>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
 
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
-              select
               label="Nome do plano"
               value={form.name}
               onChange={(e) => set('name', e.target.value)}
               fullWidth
-              SelectProps={{ native: true }}
-            >
-              {PLAN_NAMES.map((n) => <option key={n} value={n}>{n}</option>)}
-            </TextField>
+            />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
@@ -131,12 +127,14 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
               onChange={(e) => set('system', e.target.value)}
               fullWidth
               disabled={!!plan}
-              SelectProps={{ native: true }}
             >
-              <option value="" disabled>Selecione…</option>
-              {systems.filter((s) => s.active).map((s) => (
-                <option key={s.slug} value={s.slug}>{s.name}</option>
-              ))}
+              {systems
+                .filter((s) => s.active)
+                .map((s) => (
+                  <MenuItem key={s.slug} value={s.slug}>
+                    {s.name}
+                  </MenuItem>
+                ))}
             </TextField>
           </Grid>
           <Grid size={{ xs: 6 }}>
@@ -174,13 +172,19 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
               value={form.annualPriceCents ?? ''}
               onChange={(e) => set('annualPriceCents', e.target.value ? Number(e.target.value) : null)}
               fullWidth
-              helperText={form.annualPriceCents ? `R$ ${(form.annualPriceCents / 100).toFixed(2)}/mês` : 'Deixe vazio para sem anual'}
+              helperText={
+                form.annualPriceCents
+                  ? `R$ ${(form.annualPriceCents / 100).toFixed(2)}/mês`
+                  : 'Deixe vazio para sem anual'
+              }
             />
           </Grid>
         </Grid>
 
         <Divider sx={{ my: 3 }} />
-        <Typography variant="subtitle2" fontWeight={600} mb={1}>Features</Typography>
+        <Typography variant="subtitle2" fontWeight={600} mb={1}>
+          Features
+        </Typography>
 
         <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
           {features.map((f) => (
@@ -215,7 +219,9 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={saving}>Cancelar</Button>
+        <Button onClick={onClose} disabled={saving}>
+          Cancelar
+        </Button>
         <Button variant="contained" onClick={handleSave} disabled={saving}>
           {saving ? 'Salvando...' : 'Salvar'}
         </Button>

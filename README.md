@@ -108,7 +108,7 @@ O PM2 é configurado via `~/apps/ecosystem.config.js` e sobe automaticamente no 
 
 ## Infraestrutura do servidor
 
-- **VPS:** Ubuntu 22.04, IP `2.25.159.145`, usuário `olimpo`
+- **VPS:** Ubuntu 22.04 (Hetzner), IP `167.233.23.111`, usuário `olimpo`
 - **Node.js:** 20 via NVM
 - **PM2:** gerencia os dois processos front
 - **Nginx:** roteia `/` → Next.js porta 3000 (prod) ou 3001 (homolog)
