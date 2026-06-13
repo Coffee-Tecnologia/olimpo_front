@@ -5,11 +5,15 @@ export interface PlanFeature {
   value: string;
 }
 
+export type PlanType = 'subscription' | 'credit_pack';
+
 export interface Plan {
   id: string;
   name: string;
-  maxCnpjs: number;
-  maxUsers: number;
+  planType: PlanType;
+  maxCnpjs: number | null;
+  maxUsers: number | null;
+  creditsAmount: number | null;
   monthlyPriceCents: number;
   annualPriceCents: number | null;
   active: boolean;

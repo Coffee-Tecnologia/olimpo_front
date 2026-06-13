@@ -63,8 +63,46 @@ interface PlanCardProps {
 }
 
 export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscribing, onSubscribe }) => {
+  const isCreditPack = plan.planType === 'credit_pack';
   const isDegust = plan.name === 'Degust';
   const isPro = plan.name === 'Pro';
+
+  if (isCreditPack) {
+    return (
+      <div className={styles.cardWrapper}>
+        <div className={styles.card}>
+          <p className={styles.planName}>{plan.name}</p>
+
+          <div className={styles.priceRow}>
+            <div className={styles.priceBlock}>
+              <span className={styles.priceAmount}>{formatPrice(plan.monthlyPriceCents)}</span>
+              <span className={styles.priceSuffix}>/único</span>
+            </div>
+            <p className={styles.description}>Pagamento único · sem renovação</p>
+          </div>
+
+          <div className={styles.divider} />
+
+          <div className={styles.creditsHighlight}>
+            <span className={styles.creditsAmount}>{plan.creditsAmount?.toLocaleString('pt-BR')}</span>
+            <span className={styles.creditsLabel}>créditos</span>
+          </div>
+
+          <button
+            className={styles.btn}
+            disabled={isSubscribing}
+            onClick={() => onSubscribe(plan.id)}
+          >
+            {isSubscribing ? (
+              <CircularProgress size={16} thickness={5} sx={{ color: '#f97316' }} />
+            ) : (
+              'Comprar créditos'
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const displayCents =
     !isDegust && billingCycle === 'annual' && plan.annualPriceCents

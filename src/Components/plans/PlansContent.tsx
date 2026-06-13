@@ -25,6 +25,9 @@ const sortPlans = (plans: Plan[]) =>
       PLAN_ORDER.indexOf(b.name as (typeof PLAN_ORDER)[number]),
   );
 
+const sortCreditPacks = (plans: Plan[]) =>
+  [...plans].sort((a, b) => (a.creditsAmount ?? 0) - (b.creditsAmount ?? 0));
+
 interface PlansContentProps {
   system: string;
   token: string;
@@ -41,7 +44,7 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
   const [downgradeTarget, setDowngradeTarget] = useState<Plan | null>(null);
 
   useEffect(() => {
-    const plansPromise = getPlans(system).then((data) => setPlans(sortPlans(data)));
+    const plansPromise = getPlans(system).then((data) => setPlans(data));
     const accountPromise = token
       ? getCurrentAccount(token)
           .then((data) => setCurrentPlan(data.plan))
@@ -53,17 +56,20 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
       .finally(() => setLoading(false));
   }, [system, token]);
 
+  const subscriptions = sortPlans(plans.filter((p) => p.planType !== 'credit_pack'));
+  const creditPacks = sortCreditPacks(plans.filter((p) => p.planType === 'credit_pack'));
+
   const doSubscribe = async (plan: Plan) => {
     setSubscribingPlanId(plan.id);
     setSubscribeError(null);
 
-    const cycle = plan.name === 'Degust' ? 'monthly' : billingCycle;
+    const cycle = plan.planType === 'credit_pack' || plan.name === 'Degust' ? 'monthly' : billingCycle;
 
     try {
       const { checkoutUrl } = await createCheckout(token, plan.id, cycle);
       window.location.href = checkoutUrl;
     } catch {
-      setSubscribeError('Erro ao iniciar assinatura. Tente novamente.');
+      setSubscribeError('Erro ao iniciar a compra. Tente novamente.');
       setSubscribingPlanId(null);
     }
   };
@@ -72,7 +78,10 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
     const plan = plans.find((p) => p.id === planId);
     if (!plan) return;
 
-    const isDowngrade = currentPlan !== null && plan.monthlyPriceCents < currentPlan.monthlyPriceCents;
+    const isDowngrade =
+      plan.planType !== 'credit_pack' &&
+      currentPlan !== null &&
+      plan.monthlyPriceCents < currentPlan.monthlyPriceCents;
 
     if (isDowngrade) {
       setDowngradeTarget(plan);
@@ -112,17 +121,41 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
       {loading ? (
         <PlansSkeleton />
       ) : (
-        <div className={styles.grid}>
-          {plans.map((plan) => (
-            <PlanCard
-              key={plan.id}
-              plan={plan}
-              billingCycle={billingCycle}
-              isSubscribing={subscribingPlanId === plan.id}
-              onSubscribe={handleSubscribe}
-            />
-          ))}
-        </div>
+        <>
+          {subscriptions.length > 0 && (
+            <div className={styles.grid}>
+              {subscriptions.map((plan) => (
+                <PlanCard
+                  key={plan.id}
+                  plan={plan}
+                  billingCycle={billingCycle}
+                  isSubscribing={subscribingPlanId === plan.id}
+                  onSubscribe={handleSubscribe}
+                />
+              ))}
+            </div>
+          )}
+
+          {creditPacks.length > 0 && (
+            <section className={styles.creditSection}>
+              <h2 className={styles.sectionTitle}>Pacotes de créditos</h2>
+              <p className={styles.sectionSubtitle}>
+                Compra avulsa, sem assinatura. Os créditos são somados ao seu saldo.
+              </p>
+              <div className={styles.grid}>
+                {creditPacks.map((plan) => (
+                  <PlanCard
+                    key={plan.id}
+                    plan={plan}
+                    billingCycle={billingCycle}
+                    isSubscribing={subscribingPlanId === plan.id}
+                    onSubscribe={handleSubscribe}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
       <Dialog open={downgradeTarget !== null} onClose={() => setDowngradeTarget(null)} maxWidth="xs" fullWidth>

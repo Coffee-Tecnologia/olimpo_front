@@ -270,3 +270,49 @@
     cursor: not-allowed;
   }
 }
+
+/* ── Seção de pacotes de créditos ────────────── */
+
+.creditSection {
+  max-width: 1160px;
+  margin: 64px auto 0;
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111;
+  text-align: center;
+  margin: 0 0 6px;
+}
+
+.sectionSubtitle {
+  font-size: 14px;
+  color: #888;
+  text-align: center;
+  margin: 0 0 32px;
+}
+
+.creditsHighlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.creditsAmount {
+  font-size: 40px;
+  font-weight: 800;
+  color: #f97316;
+  line-height: 1;
+}
+
+.creditsLabel {
+  font-size: 14px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
