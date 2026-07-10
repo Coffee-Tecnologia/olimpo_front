@@ -2,12 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import {
-  getAdminKeys,
-  rotateKek,
-  type KeyAccountStatus,
-  type KeysResponse,
-} from '@/api/admin';
+import { getAdminKeys, rotateKek, type KeyAccountStatus, type KeysResponse } from '@/api/admin';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Alert from '@mui/material/Alert';
@@ -58,13 +53,11 @@ function dekStatus(lastRotatedAt: string | null): {
   return { label: 'Em dia', dot: '#2e7d32' };
 }
 
-const LEASE_STATUS: Record<
-  KeyAccountStatus['status'],
-  { label: string; dot: string }
-> = {
-  healthy:           { label: 'Saudável',        dot: '#2e7d32' },
-  degraded:          { label: 'Degradado',        dot: '#f57c00' },
-  blocked:           { label: 'Bloqueado',        dot: '#c62828' },
+const LEASE_STATUS: Record<KeyAccountStatus['status'], { label: string; dot: string }> = {
+  healthy: { label: 'Saudável', dot: '#2e7d32' },
+  degraded: { label: 'Degradado', dot: '#f57c00' },
+  blocked: { label: 'Bloqueado', dot: '#c62828' },
+  // eslint-disable-next-line camelcase
   never_provisioned: { label: 'Não provisionado', dot: '#9e9e9e' },
 };
 
@@ -86,11 +79,7 @@ const Dot: React.FC<{ color: string }> = ({ color }) => (
   />
 );
 
-const StatusCell: React.FC<{ dot: string; label: string; sub: string }> = ({
-  dot,
-  label,
-  sub,
-}) => (
+const StatusCell: React.FC<{ dot: string; label: string; sub: string }> = ({ dot, label, sub }) => (
   <Box>
     <Box display="flex" alignItems="center">
       <Dot color={dot} />
@@ -127,7 +116,9 @@ export const AdminKeysList: React.FC = () => {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const handleRotate = async () => {
     if (!reason.trim()) return;
@@ -156,10 +147,10 @@ export const AdminKeysList: React.FC = () => {
   const { summary, kek } = data ?? {};
 
   const summaryCards = [
-    { label: 'Contas',           value: summary?.total,           color: '#5e60ce' },
-    { label: 'Renovando',        value: summary?.healthy,         color: '#2e7d32' },
+    { label: 'Contas', value: summary?.total, color: '#5e60ce' },
+    { label: 'Renovando', value: summary?.healthy, color: '#2e7d32' },
     { label: 'Rotação atrasada', value: summary?.rotationOverdue, color: '#f57c00' },
-    { label: 'Bloqueadas',       value: summary?.blocked,         color: '#c62828' },
+    { label: 'Bloqueadas', value: summary?.blocked, color: '#c62828' },
   ];
 
   return (
@@ -175,7 +166,9 @@ export const AdminKeysList: React.FC = () => {
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
       )}
       {rotateResult && (
         <Alert severity="success" sx={{ mb: 2 }} onClose={() => setRotateResult(null)}>
@@ -215,7 +208,9 @@ export const AdminKeysList: React.FC = () => {
           </Box>
 
           {loading ? (
-            <Box p={2}><Skeleton variant="rectangular" height={200} /></Box>
+            <Box p={2}>
+              <Skeleton variant="rectangular" height={200} />
+            </Box>
           ) : (
             <Table size="small">
               <TableHead>
@@ -237,7 +232,7 @@ export const AdminKeysList: React.FC = () => {
 
               <TableBody>
                 {(data?.accounts ?? []).map((account) => {
-                  const dek  = dekStatus(account.lastRotatedAt);
+                  const dek = dekStatus(account.lastRotatedAt);
                   const lease = LEASE_STATUS[account.status] ?? LEASE_STATUS.never_provisioned;
                   const provisioned = account.status !== 'never_provisioned';
 
@@ -259,20 +254,18 @@ export const AdminKeysList: React.FC = () => {
                       {/* VERSÃO */}
                       <TableCell>
                         <Typography variant="body2" color={provisioned ? 'text.primary' : 'text.disabled'}>
-                          {account.keyVersion != null ? `v${account.keyVersion}` : '—'}
+                          {account.keyVersion !== null ? `v${account.keyVersion}` : '—'}
                         </Typography>
                       </TableCell>
 
                       {/* ROTAÇÃO DE DEK */}
                       <TableCell>
                         {provisioned ? (
-                          <StatusCell
-                            dot={dek.dot}
-                            label={dek.label}
-                            sub={timeAgo(account.lastRotatedAt)}
-                          />
+                          <StatusCell dot={dek.dot} label={dek.label} sub={timeAgo(account.lastRotatedAt)} />
                         ) : (
-                          <Typography variant="body2" color="text.disabled">—</Typography>
+                          <Typography variant="body2" color="text.disabled">
+                            —
+                          </Typography>
                         )}
                       </TableCell>
 
@@ -362,8 +355,8 @@ export const AdminKeysList: React.FC = () => {
         <DialogTitle>Rotacionar KEK</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
           <Alert severity="warning">
-            Isso <strong>reembrulha a DEK de todas as contas ativas</strong> com uma nova chave
-            mestra (KEK). A operação não re-criptografa arquivos.
+            Isso <strong>reembrulha a DEK de todas as contas ativas</strong> com uma nova chave mestra (KEK). A operação
+            não re-criptografa arquivos.
           </Alert>
           <TextField
             label="Justificativa (obrigatória)"
