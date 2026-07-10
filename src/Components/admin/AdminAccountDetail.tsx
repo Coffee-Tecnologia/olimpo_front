@@ -7,6 +7,7 @@ import {
   getAdminAccount,
   activateAccount,
   deactivateAccount,
+  updateAdminAccount,
   upsertFeatureOverride,
   deleteFeatureOverride,
   type AdminAccountDetail as AdminAccountDetailData,
@@ -22,8 +23,11 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import Skeleton from '@mui/material/Skeleton';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -45,6 +49,8 @@ export const AdminAccountDetail: React.FC<Props> = ({ accountId }) => {
   const [error, setError] = useState<string | null>(null);
   const [newFeature, setNewFeature] = useState({ featureName: '', value: '' });
   const [saving, setSaving] = useState(false);
+  const [deploymentTypeDraft, setDeploymentTypeDraft] = useState<'cloud' | 'on_premise'>('cloud');
+  const [savingDt, setSavingDt] = useState(false);
 
   const load = useCallback(() => {
     getAdminAccount(accountId)
@@ -55,6 +61,10 @@ export const AdminAccountDetail: React.FC<Props> = ({ accountId }) => {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    if (account) setDeploymentTypeDraft(account.deploymentType);
+  }, [account]);
 
   const handleActivate = async () => {
     await activateAccount(accountId);
@@ -81,6 +91,16 @@ export const AdminAccountDetail: React.FC<Props> = ({ accountId }) => {
   const handleDeleteOverride = async (overrideId: string) => {
     await deleteFeatureOverride(accountId, overrideId);
     load();
+  };
+
+  const handleSaveDeploymentType = async () => {
+    setSavingDt(true);
+    try {
+      await updateAdminAccount(accountId, { deploymentType: deploymentTypeDraft });
+      load();
+    } finally {
+      setSavingDt(false);
+    }
   };
 
   if (error) return <Alert severity="error">{error}</Alert>;
@@ -135,6 +155,34 @@ export const AdminAccountDetail: React.FC<Props> = ({ accountId }) => {
                       </Typography>
                     </Grid>
                   ))}
+
+                  <Grid size={{ xs: 12 }} sx={{ mt: 0.5 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      Implantação
+                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+                      <FormControl size="small">
+                        <Select
+                          value={deploymentTypeDraft}
+                          onChange={(e) => setDeploymentTypeDraft(e.target.value as 'cloud' | 'on_premise')}
+                          sx={{ minWidth: 150 }}
+                        >
+                          <MenuItem value="cloud">Nuvem</MenuItem>
+                          <MenuItem value="on_premise">On-premise</MenuItem>
+                        </Select>
+                      </FormControl>
+                      {deploymentTypeDraft !== account.deploymentType && (
+                        <Button
+                          size="small"
+                          variant="contained"
+                          onClick={handleSaveDeploymentType}
+                          disabled={savingDt}
+                        >
+                          {savingDt ? 'Salvando...' : 'Salvar'}
+                        </Button>
+                      )}
+                    </Box>
+                  </Grid>
                 </Grid>
 
                 <Divider sx={{ my: 2 }} />

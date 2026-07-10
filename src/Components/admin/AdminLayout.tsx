@@ -10,6 +10,7 @@ import LayersIcon from '@mui/icons-material/Layers';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import PeopleIcon from '@mui/icons-material/People';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { label: 'Contas', href: '/admin/accounts', icon: <PeopleIcon /> },
   { label: 'Planos', href: '/admin/plans', icon: <LayersIcon /> },
   { label: 'Sistemas', href: '/admin/systems', icon: <AppsIcon /> },
+  { label: 'Chaves', href: '/admin/keys', icon: <VpnKeyIcon /> },
 ];
 
 interface AdminLayoutProps {

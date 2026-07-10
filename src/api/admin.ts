@@ -86,10 +86,20 @@ export interface AdminAccount {
   email: string;
   status: 'trial' | 'active' | 'inactive' | 'cancelled';
   billingCycle: string;
+  deploymentType: 'cloud' | 'on_premise';
   plan: AdminPlan;
   userCount: number;
   currentPeriodEnd: string | null;
   createdAt: string;
+}
+
+export interface AdminAccountUpdatePayload {
+  name?: string;
+  email?: string;
+  planId?: string;
+  status?: string;
+  billingCycle?: string;
+  deploymentType?: 'cloud' | 'on_premise';
 }
 
 export interface AdminAccountDetail extends AdminAccount {
@@ -126,6 +136,9 @@ export const activateAccount = (id: string) =>
 
 export const deactivateAccount = (id: string) =>
   adminApi.patch<AdminAccount>(`/accounts/${id}/deactivate`).then((r) => r.data);
+
+export const updateAdminAccount = (id: string, payload: AdminAccountUpdatePayload) =>
+  adminApi.patch<AdminAccount>(`/accounts/${id}`, { account: payload }).then((r) => r.data);
 
 // ── Feature Overrides ─────────────────────────────────────────────────────────
 
@@ -226,3 +239,42 @@ export const createServiceClient = (name: string, system: string) =>
 
 export const revokeServiceClient = (id: string) =>
   adminApi.patch<ServiceClient>(`/service_clients/${id}/revoke`).then((r) => r.data);
+
+// ── Keys ──────────────────────────────────────────────────────────────────────
+
+export interface KeyAccountStatus {
+  accountId: string;
+  accountName: string;
+  system: string;
+  deploymentType: 'cloud' | 'on_premise';
+  keyVersion: number | null;
+  lastRotatedAt: string | null;
+  lastIssuedAt: string | null;
+  status: 'healthy' | 'degraded' | 'blocked' | 'never_provisioned';
+}
+
+export interface KeysSummary {
+  total: number;
+  healthy: number;
+  degraded: number;
+  blocked: number;
+  rotationOverdue: number;
+}
+
+export interface KekInfo {
+  version: number;
+  activatedAt: string;
+  rotationReason: string | null;
+}
+
+export interface KeysResponse {
+  summary: KeysSummary;
+  accounts: KeyAccountStatus[];
+  kek: KekInfo | null;
+}
+
+export const getAdminKeys = () =>
+  adminApi.get<KeysResponse>('/keys').then((r) => r.data);
+
+export const rotateKek = (reason: string) =>
+  adminApi.post<{ rotatedAt: string; newKekVersion: number }>('/keys/rotate_kek', { reason }).then((r) => r.data);
