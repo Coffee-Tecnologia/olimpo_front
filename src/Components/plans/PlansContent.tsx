@@ -2,13 +2,25 @@
 
 import { useEffect, useState } from 'react';
 
-import { Plan, BillingCycle, CurrentAccountPlan, getPlans, getCurrentAccount, createCheckout } from '@/api/plans';
+import {
+  Plan,
+  BillingCycle,
+  CurrentAccount,
+  getPlans,
+  getCurrentAccount,
+  createCheckout,
+  cancelSubscription,
+  resumeSubscription,
+} from '@/api/plans';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import { BillingToggle } from './BillingToggle';
@@ -28,6 +40,11 @@ const sortPlans = (plans: Plan[]) =>
 const sortCreditPacks = (plans: Plan[]) =>
   [...plans].sort((a, b) => (a.creditsAmount ?? 0) - (b.creditsAmount ?? 0));
 
+function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
 interface PlansContentProps {
   system: string;
   token: string;
@@ -35,7 +52,7 @@ interface PlansContentProps {
 
 export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => {
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [currentPlan, setCurrentPlan] = useState<CurrentAccountPlan | null>(null);
+  const [currentAccount, setCurrentAccount] = useState<CurrentAccount | null>(null);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -43,11 +60,21 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
   const [subscribeError, setSubscribeError] = useState<string | null>(null);
   const [downgradeTarget, setDowngradeTarget] = useState<Plan | null>(null);
 
+  // cancel dialog
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+
+  // resume
+  const [resuming, setResuming] = useState(false);
+  const [resumeError, setResumeError] = useState<string | null>(null);
+
   useEffect(() => {
     const plansPromise = getPlans(system).then((data) => setPlans(data));
     const accountPromise = token
       ? getCurrentAccount(token)
-          .then((data) => setCurrentPlan(data.plan))
+          .then((data) => setCurrentAccount(data))
           .catch(() => null)
       : Promise.resolve();
 
@@ -58,6 +85,8 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
 
   const subscriptions = sortPlans(plans.filter((p) => p.planType !== 'credit_pack'));
   const creditPacks = sortCreditPacks(plans.filter((p) => p.planType === 'credit_pack'));
+
+  const currentPlan = currentAccount?.plan ?? null;
 
   const doSubscribe = async (plan: Plan) => {
     setSubscribingPlanId(plan.id);
@@ -97,12 +126,128 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
     doSubscribe(plan);
   };
 
+  const handleOpenCancel = () => {
+    setCancelReason('');
+    setCancelError(null);
+    setCancelOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    setCancelling(true);
+    setCancelError(null);
+    try {
+      const result = await cancelSubscription(token, cancelReason.trim() || undefined);
+      setCancelOpen(false);
+      setCurrentAccount((prev) =>
+        prev
+          ? {
+              ...prev,
+              cancelAtPeriodEnd: true,
+              accessEndsAt: result.accessEndsAt,
+            }
+          : prev,
+      );
+    } catch {
+      setCancelError('Erro ao cancelar assinatura. Tente novamente.');
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const handleResume = async () => {
+    setResuming(true);
+    setResumeError(null);
+    try {
+      await resumeSubscription(token);
+      setCurrentAccount((prev) =>
+        prev
+          ? {
+              ...prev,
+              cancelAtPeriodEnd: false,
+              accessEndsAt: null,
+            }
+          : prev,
+      );
+    } catch {
+      setResumeError('Erro ao reativar assinatura. Tente novamente.');
+    } finally {
+      setResuming(false);
+    }
+  };
+
   return (
     <main className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Escolha seu plano</h1>
         <p className={styles.subtitle}>Gerencie suas empresas com segurança e escale quando precisar.</p>
       </div>
+
+      {/* ── Painel Gerenciar assinatura ──────────────────────────────────────── */}
+      {currentPlan && (
+        <Box
+          sx={{
+            maxWidth: 560,
+            mx: 'auto',
+            mb: 4,
+            p: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+          }}
+        >
+          <Typography variant="subtitle2" color="text.secondary">
+            Assinatura atual
+          </Typography>
+          <Typography variant="h6" fontWeight={700}>
+            {currentPlan.name}
+          </Typography>
+
+          {currentAccount?.cancelAtPeriodEnd ? (
+            <>
+              <Typography variant="body2" color="error.main">
+                Cancelado — acesso até {formatDate(currentAccount.accessEndsAt ?? currentAccount.currentPeriodEnd)}
+              </Typography>
+              {resumeError && (
+                <Alert severity="error" onClose={() => setResumeError(null)}>
+                  {resumeError}
+                </Alert>
+              )}
+              <Box mt={1}>
+                <Button
+                  variant="outlined"
+                  onClick={handleResume}
+                  disabled={resuming}
+                  startIcon={resuming ? <CircularProgress size={16} /> : undefined}
+                >
+                  {resuming ? 'Reativando...' : 'Reativar assinatura'}
+                </Button>
+              </Box>
+            </>
+          ) : (
+            <>
+              {currentAccount?.currentPeriodEnd && (
+                <Typography variant="body2" color="text.secondary">
+                  Renova em {formatDate(currentAccount.currentPeriodEnd)}
+                </Typography>
+              )}
+              <Box mt={1}>
+                <Button
+                  variant="text"
+                  color="inherit"
+                  size="small"
+                  sx={{ color: 'text.secondary', textDecoration: 'underline', p: 0 }}
+                  onClick={handleOpenCancel}
+                >
+                  Cancelar assinatura
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
+      )}
 
       {!loading && <BillingToggle value={billingCycle} onChange={setBillingCycle} />}
 
@@ -158,6 +303,7 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
         </>
       )}
 
+      {/* ── Dialog: downgrade ───────────────────────────────────────────────── */}
       <Dialog open={downgradeTarget !== null} onClose={() => setDowngradeTarget(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Atenção: downgrade de plano</DialogTitle>
         <DialogContent>
@@ -171,6 +317,49 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
           <Button onClick={() => setDowngradeTarget(null)}>Cancelar</Button>
           <Button variant="contained" color="warning" onClick={handleConfirmDowngrade}>
             Sim, fazer downgrade
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* ── Dialog: cancelar assinatura ────────────────────────────────────── */}
+      <Dialog open={cancelOpen} onClose={() => !cancelling && setCancelOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Cancelar assinatura</DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
+          <Typography variant="body2">
+            Seu acesso continua normalmente até o fim do período já pago
+            {currentAccount?.currentPeriodEnd ? (
+              <>
+                {' '}
+                (<strong>{formatDate(currentAccount.currentPeriodEnd)}</strong>)
+              </>
+            ) : null}
+            . Você pode reativar a qualquer momento antes dessa data.
+          </Typography>
+
+          <TextField
+            label="Por que está cancelando? (opcional)"
+            multiline
+            rows={3}
+            fullWidth
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+            disabled={cancelling}
+          />
+
+          {cancelError && <Alert severity="error">{cancelError}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCancelOpen(false)} disabled={cancelling}>
+            Manter assinatura
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleConfirmCancel}
+            disabled={cancelling}
+            startIcon={cancelling ? <CircularProgress size={16} sx={{ color: 'inherit' }} /> : undefined}
+          >
+            {cancelling ? 'Cancelando...' : 'Confirmar cancelamento'}
           </Button>
         </DialogActions>
       </Dialog>
