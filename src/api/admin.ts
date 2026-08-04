@@ -99,6 +99,7 @@ export interface AdminAccountUpdatePayload {
   planId?: string;
   status?: string;
   billingCycle?: string;
+  currentPeriodEnd?: string | null;
   deploymentType?: 'cloud' | 'on_premise';
 }
 
