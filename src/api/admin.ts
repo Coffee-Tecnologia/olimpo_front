@@ -6,9 +6,7 @@ export const ADMIN_TOKEN_KEY = 'olimpo_admin_token';
 
 const BASE = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin`;
 
-const adminApi = applyCaseMiddleware(
-  axios.create({ baseURL: BASE, timeout: 10_000 })
-);
+const adminApi = applyCaseMiddleware(axios.create({ baseURL: BASE, timeout: 10_000 }));
 
 adminApi.interceptors.request.use((config) => {
   const token = cookies.get(ADMIN_TOKEN_KEY);
@@ -67,8 +65,7 @@ export interface DashboardResponse {
   recentAccounts: DashboardAccount[];
 }
 
-export const getAdminDashboard = () =>
-  adminApi.get<DashboardResponse>('/dashboard').then((r) => r.data);
+export const getAdminDashboard = () => adminApi.get<DashboardResponse>('/dashboard').then((r) => r.data);
 
 // ── Accounts ──────────────────────────────────────────────────────────────────
 
@@ -129,8 +126,7 @@ export interface AccountFilters {
 export const getAdminAccounts = (filters: AccountFilters = {}) =>
   adminApi.get<AccountsResponse>('/accounts', { params: filters }).then((r) => r.data);
 
-export const getAdminAccount = (id: string) =>
-  adminApi.get<AdminAccountDetail>(`/accounts/${id}`).then((r) => r.data);
+export const getAdminAccount = (id: string) => adminApi.get<AdminAccountDetail>(`/accounts/${id}`).then((r) => r.data);
 
 export const activateAccount = (id: string) =>
   adminApi.patch<AdminAccount>(`/accounts/${id}/activate`).then((r) => r.data);
@@ -150,7 +146,9 @@ export interface FeatureOverride {
 }
 
 export const upsertFeatureOverride = (accountId: string, featureName: string, value: string) =>
-  adminApi.post<FeatureOverride>(`/accounts/${accountId}/feature_overrides`, { featureName, value }).then((r) => r.data);
+  adminApi
+    .post<FeatureOverride>(`/accounts/${accountId}/feature_overrides`, { featureName, value })
+    .then((r) => r.data);
 
 export const deleteFeatureOverride = (accountId: string, overrideId: string) =>
   adminApi.delete(`/accounts/${accountId}/feature_overrides/${overrideId}`);
@@ -210,8 +208,7 @@ export interface AdminSystem {
   active: boolean;
 }
 
-export const getAdminSystems = () =>
-  adminApi.get<AdminSystem[]>('/systems').then((r) => r.data);
+export const getAdminSystems = () => adminApi.get<AdminSystem[]>('/systems').then((r) => r.data);
 
 export const createAdminSystem = (slug: string, name: string) =>
   adminApi.post<AdminSystem>('/systems', { slug, name }).then((r) => r.data);
@@ -274,8 +271,7 @@ export interface KeysResponse {
   kek: KekInfo | null;
 }
 
-export const getAdminKeys = () =>
-  adminApi.get<KeysResponse>('/keys').then((r) => r.data);
+export const getAdminKeys = () => adminApi.get<KeysResponse>('/keys').then((r) => r.data);
 
 export const rotateKek = (reason: string) =>
   adminApi.post<{ rotatedAt: string; newKekVersion: number }>('/keys/rotate_kek', { reason }).then((r) => r.data);

@@ -59,16 +59,17 @@ interface FormState {
 
 // ── constants ──────────────────────────────────────────────────────────────────
 
-const SYSTEMS  = ['', 'compass', 'apollo', 'cerimonial'];
+const SYSTEMS = ['', 'compass', 'apollo', 'cerimonial'];
 const STATUSES = ['', 'active', 'trial', 'inactive', 'cancelled'];
 
 const BILLING_CYCLE_LABELS: Record<string, string> = {
   monthly: 'Mensal',
-  annual:  'Anual',
+  annual: 'Anual',
 };
 
 const DEPLOYMENT_TYPE_LABELS: Record<string, string> = {
-  cloud:      'Nuvem',
+  cloud: 'Nuvem',
+  // eslint-disable-next-line camelcase
   on_premise: 'On-premise',
 };
 
@@ -79,7 +80,7 @@ function toDateInput(iso: string | null | undefined): string {
 }
 
 function dialogTitle(mode: DialogMode, name: string): string {
-  if (mode === 'activate')   return `Ativar — ${name}`;
+  if (mode === 'activate') return `Ativar — ${name}`;
   if (mode === 'deactivate') return `Desativar — ${name}`;
   return `Editar conta — ${name}`;
 }
@@ -91,18 +92,23 @@ export const AdminAccountsList: React.FC = () => {
 
   // list state
   const [accounts, setAccounts] = useState<AdminAccount[]>([]);
-  const [meta, setMeta]         = useState({ totalCount: 0, totalPages: 1, currentPage: 1 });
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState<string | null>(null);
-  const [filters, setFilters]   = useState<AccountFilters>({ page: 1 });
-  const [page, setPage]         = useState(0);
+  const [meta, setMeta] = useState({ totalCount: 0, totalPages: 1, currentPage: 1 });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<AccountFilters>({ page: 1 });
+  const [page, setPage] = useState(0);
 
   // dialog state
-  const [dialog, setDialog]           = useState<DialogState | null>(null);
-  const [form, setForm]               = useState<FormState>({ expiresAt: '', planId: '', billingCycle: 'monthly', deploymentType: 'cloud' });
+  const [dialog, setDialog] = useState<DialogState | null>(null);
+  const [form, setForm] = useState<FormState>({
+    expiresAt: '',
+    planId: '',
+    billingCycle: 'monthly',
+    deploymentType: 'cloud',
+  });
   const [systemPlans, setSystemPlans] = useState<AdminPlanFull[]>([]);
   const [plansLoading, setPlansLoading] = useState(false);
-  const [saving, setSaving]           = useState(false);
+  const [saving, setSaving] = useState(false);
   const [dialogError, setDialogError] = useState<string | null>(null);
 
   // ── list logic ──────────────────────────────────────────────────────────────
@@ -110,12 +116,18 @@ export const AdminAccountsList: React.FC = () => {
   const load = useCallback((f: AccountFilters) => {
     setLoading(true);
     getAdminAccounts(f)
-      .then(({ accounts: data, meta: m }) => { setAccounts(data); setMeta(m); setError(null); })
+      .then(({ accounts: data, meta: m }) => {
+        setAccounts(data);
+        setMeta(m);
+        setError(null);
+      })
       .catch(() => setError('Erro ao carregar contas.'))
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { load(filters); }, [filters, load]);
+  useEffect(() => {
+    load(filters);
+  }, [filters, load]);
 
   const handleFilter = (key: keyof AccountFilters, value: string) => {
     setFilters((f) => ({ ...f, [key]: value || undefined, page: 1 }));
@@ -132,9 +144,9 @@ export const AdminAccountsList: React.FC = () => {
   const openDialog = (mode: DialogMode, account: AdminAccount) => {
     setDialog({ mode, account });
     setForm({
-      expiresAt:      toDateInput(account.currentPeriodEnd),
-      planId:         account.plan.id,
-      billingCycle:   account.billingCycle,
+      expiresAt: toDateInput(account.currentPeriodEnd),
+      planId: account.plan.id,
+      billingCycle: account.billingCycle,
       deploymentType: account.deploymentType,
     });
     setDialogError(null);
@@ -169,14 +181,14 @@ export const AdminAccountsList: React.FC = () => {
     try {
       if (dialog.mode === 'edit') {
         await updateAdminAccount(dialog.account.id, {
-          planId:          form.planId,
-          billingCycle:    form.billingCycle,
+          planId: form.planId,
+          billingCycle: form.billingCycle,
           currentPeriodEnd: form.expiresAt || null,
-          deploymentType:  form.deploymentType,
+          deploymentType: form.deploymentType,
         });
       } else {
         await updateAdminAccount(dialog.account.id, {
-          status:          dialog.mode === 'activate' ? 'active' : 'inactive',
+          status: dialog.mode === 'activate' ? 'active' : 'inactive',
           currentPeriodEnd: form.expiresAt || null,
         });
       }
@@ -207,17 +219,41 @@ export const AdminAccountsList: React.FC = () => {
           onChange={(e) => handleFilter('q', e.target.value)}
           sx={{ minWidth: 220 }}
         />
-        <TextField select label="Sistema" size="small" defaultValue=""
-          onChange={(e) => handleFilter('system', e.target.value)} sx={{ minWidth: 140 }}>
-          {SYSTEMS.map((s) => <MenuItem key={s} value={s}>{s || 'Todos'}</MenuItem>)}
+        <TextField
+          select
+          label="Sistema"
+          size="small"
+          defaultValue=""
+          onChange={(e) => handleFilter('system', e.target.value)}
+          sx={{ minWidth: 140 }}
+        >
+          {SYSTEMS.map((s) => (
+            <MenuItem key={s} value={s}>
+              {s || 'Todos'}
+            </MenuItem>
+          ))}
         </TextField>
-        <TextField select label="Status" size="small" defaultValue=""
-          onChange={(e) => handleFilter('status', e.target.value)} sx={{ minWidth: 140 }}>
-          {STATUSES.map((s) => <MenuItem key={s} value={s}>{s || 'Todos'}</MenuItem>)}
+        <TextField
+          select
+          label="Status"
+          size="small"
+          defaultValue=""
+          onChange={(e) => handleFilter('status', e.target.value)}
+          sx={{ minWidth: 140 }}
+        >
+          {STATUSES.map((s) => (
+            <MenuItem key={s} value={s}>
+              {s || 'Todos'}
+            </MenuItem>
+          ))}
         </TextField>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       {/* Table */}
       <Table>
@@ -236,25 +272,33 @@ export const AdminAccountsList: React.FC = () => {
           {loading
             ? Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 7 }).map((__, j) => <TableCell key={j}><Skeleton /></TableCell>)}
+                  {Array.from({ length: 7 }).map((__, j) => (
+                    <TableCell key={j}>
+                      <Skeleton />
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
             : accounts.map((account) => (
                 <TableRow key={account.id} hover>
                   <TableCell>
-                    <Typography variant="body2" fontWeight={600}>{account.name}</Typography>
-                    <Typography variant="caption" color="text.secondary">{account.email}</Typography>
+                    <Typography variant="body2" fontWeight={600}>
+                      {account.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {account.email}
+                    </Typography>
                   </TableCell>
                   <TableCell>
                     <Chip label={account.plan.system} size="small" />
                   </TableCell>
                   <TableCell>{account.plan.name}</TableCell>
-                  <TableCell><StatusChip status={account.status} /></TableCell>
+                  <TableCell>
+                    <StatusChip status={account.status} />
+                  </TableCell>
                   <TableCell align="right">{account.userCount}</TableCell>
                   <TableCell>
-                    {account.currentPeriodEnd
-                      ? new Date(account.currentPeriodEnd).toLocaleDateString('pt-BR')
-                      : '—'}
+                    {account.currentPeriodEnd ? new Date(account.currentPeriodEnd).toLocaleDateString('pt-BR') : '—'}
                   </TableCell>
                   <TableCell align="center">
                     <Tooltip title="Ver detalhes">
@@ -311,7 +355,8 @@ export const AdminAccountsList: React.FC = () => {
               )}
               {dialog.mode === 'deactivate' && (
                 <Typography variant="body2" color="text.secondary">
-                  A conta será <strong>desativada</strong> imediatamente. Você pode atualizar a data de expiração ou deixar como está.
+                  A conta será <strong>desativada</strong> imediatamente. Você pode atualizar a data de expiração ou
+                  deixar como está.
                 </Typography>
               )}
 
@@ -339,7 +384,9 @@ export const AdminAccountsList: React.FC = () => {
                     >
                       {plansLoading && <MenuItem value={form.planId}>{dialog.account.plan.name}</MenuItem>}
                       {systemPlans.map((p) => (
-                        <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+                        <MenuItem key={p.id} value={p.id}>
+                          {p.name}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -352,7 +399,9 @@ export const AdminAccountsList: React.FC = () => {
                       onChange={(e) => setForm((f) => ({ ...f, billingCycle: e.target.value }))}
                     >
                       {Object.entries(BILLING_CYCLE_LABELS).map(([value, label]) => (
-                        <MenuItem key={value} value={value}>{label}</MenuItem>
+                        <MenuItem key={value} value={value}>
+                          {label}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -362,10 +411,14 @@ export const AdminAccountsList: React.FC = () => {
                     <Select
                       label="Implantação"
                       value={form.deploymentType}
-                      onChange={(e) => setForm((f) => ({ ...f, deploymentType: e.target.value as 'cloud' | 'on_premise' }))}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, deploymentType: e.target.value as 'cloud' | 'on_premise' }))
+                      }
                     >
                       {Object.entries(DEPLOYMENT_TYPE_LABELS).map(([value, label]) => (
-                        <MenuItem key={value} value={value}>{label}</MenuItem>
+                        <MenuItem key={value} value={value}>
+                          {label}
+                        </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -387,9 +440,11 @@ export const AdminAccountsList: React.FC = () => {
               >
                 {saving
                   ? 'Salvando...'
-                  : dialog.mode === 'activate'   ? 'Ativar'
-                  : dialog.mode === 'deactivate' ? 'Desativar'
-                  : 'Salvar'}
+                  : dialog.mode === 'activate'
+                    ? 'Ativar'
+                    : dialog.mode === 'deactivate'
+                      ? 'Desativar'
+                      : 'Salvar'}
               </Button>
             </DialogActions>
           </>
