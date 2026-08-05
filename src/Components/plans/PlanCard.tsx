@@ -79,14 +79,6 @@ const CheckIcon: React.FC = () => (
   </div>
 );
 
-const XIcon: React.FC = () => (
-  <div className={`${styles.featureIcon} ${styles.featureIconX}`}>
-    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
-      <path d="M1 1L8 8M8 1L1 8" stroke="#ccc" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  </div>
-);
-
 /* ── PlanCard ───────────────────────────────── */
 
 interface PlanCardProps {
@@ -180,23 +172,32 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
         <div className={styles.divider} />
 
         <div className={styles.features}>
-          {/* Features canônicas — com label formatado e estado on/off */}
-          {CANONICAL_FEATURES.map(({ key, getOnLabel, offLabel }) => {
-            const value = featuresMap[key];
-            const isOn = value !== undefined && value !== 'false';
-            const label = isOn ? getOnLabel(value) : offLabel;
-
-            return (
-              <div key={key} className={styles.featureItem}>
-                {isOn ? <CheckIcon /> : <XIcon />}
-                <span className={`${styles.featureLabel} ${isOn ? '' : styles.featureLabelOff}`}>{label}</span>
-              </div>
-            );
-          })}
-
-          {/* Features extras (não canônicas) — valor do banco é o label exibido */}
+          {/* "Todas as funcionalidades do plano X" — sempre primeiro */}
           {plan.planFeatures
-            .filter((f) => !CANONICAL_KEYS.has(f.name) && f.value !== 'false')
+            .filter((f) => !CANONICAL_KEYS.has(f.name) && f.value.toLowerCase().startsWith('todas'))
+            .map((f) => (
+              <div key={f.name} className={styles.featureItem}>
+                <CheckIcon />
+                <span className={styles.featureLabel}>{f.value}</span>
+              </div>
+            ))}
+
+          {/* Features canônicas habilitadas — desabilitadas não são exibidas */}
+          {CANONICAL_FEATURES.filter(({ key }) => {
+            const value = featuresMap[key];
+            return value !== undefined && value !== 'false';
+          }).map(({ key, getOnLabel }) => (
+            <div key={key} className={styles.featureItem}>
+              <CheckIcon />
+              <span className={styles.featureLabel}>{getOnLabel(featuresMap[key])}</span>
+            </div>
+          ))}
+
+          {/* Features extras restantes — sem "Todas as funcionalidades" */}
+          {plan.planFeatures
+            .filter(
+              (f) => !CANONICAL_KEYS.has(f.name) && f.value !== 'false' && !f.value.toLowerCase().startsWith('todas'),
+            )
             .map((f) => (
               <div key={f.name} className={styles.featureItem}>
                 <CheckIcon />
