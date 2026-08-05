@@ -13,6 +13,18 @@ export const AppGlobalStyle = () => {
           '--green-300': '#c5e1a557',
           '--green-400': '#c5e1a599',
           '--green-800': '#1B5E20',
+          /* ── Design tokens — plans page ── */
+          '--navy': '#1B2145',
+          '--navy-soft': '#2E3868',
+          '--navy-tint': '#F2F3FA',
+          '--orange': '#F2793A',
+          '--orange-dark': '#D9612A',
+          '--page-bg': '#F7F8FA',
+          '--card-bg': '#FFFFFF',
+          '--border': '#E5E7EF',
+          '--text-primary': '#1B2145',
+          '--text-secondary': '#6B7280',
+          '--text-muted': '#9CA3AF',
         },
         body: {
           margin: '0',

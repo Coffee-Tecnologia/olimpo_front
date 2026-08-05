@@ -59,7 +59,13 @@ const UserIcon: React.FC = () => (
 const CheckIcon: React.FC = () => (
   <div className={`${styles.featureIcon} ${styles.featureIconCheck}`}>
     <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
-      <path d="M1 4L4 7L10 1" stroke="#f97316" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M1 4L4 7L10 1"
+        stroke="var(--orange, #f2793a)"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   </div>
 );

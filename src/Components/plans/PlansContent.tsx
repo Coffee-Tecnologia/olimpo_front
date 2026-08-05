@@ -216,6 +216,17 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
         </>
       )}
 
+      {/* ── Divisor decorativo ──────────────────────────────────────────────── */}
+      <div className={styles.sectionDivider}>
+        <span className={styles.sectionDividerLine} />
+        <span className={styles.sectionDividerIcon}>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 1L17 9L9 17L1 9L9 1Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+          </svg>
+        </span>
+        <span className={styles.sectionDividerLine} />
+      </div>
+
       {!loading && <BillingToggle value={billingCycle} onChange={setBillingCycle} />}
 
       {fetchError && (
@@ -271,13 +282,22 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
       )}
 
       {/* ── Dialog: downgrade ───────────────────────────────────────────────── */}
-      <Dialog open={downgradeTarget !== null} onClose={() => setDowngradeTarget(null)} maxWidth="xs" fullWidth>
+      <Dialog
+        open={downgradeTarget !== null}
+        onClose={() => setDowngradeTarget(null)}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: { sx: { borderRadius: '16px', boxShadow: '0 24px 48px rgba(27, 33, 69, 0.25)' } },
+          backdrop: { sx: { backgroundColor: 'rgba(27, 33, 69, 0.45)' } },
+        }}
+      >
         <DialogContent sx={{ pt: 3, pb: 1 }}>
           <Box
             sx={{
               width: 48,
               height: 48,
-              bgcolor: '#fff5ee',
+              bgcolor: '#FDECE3',
               borderRadius: 2,
               display: 'flex',
               alignItems: 'center',
@@ -286,32 +306,45 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
             }}
           >
             <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-              <path d="M13 2L24 21H2L13 2Z" fill="#f97316" />
+              <path d="M13 2L24 21H2L13 2Z" fill="var(--orange, #F2793A)" />
               <rect x="12" y="9.5" width="2" height="6" rx="1" fill="white" />
               <rect x="12" y="17" width="2" height="2" rx="1" fill="white" />
             </svg>
           </Box>
 
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5 }}>
+          <Typography
+            variant="h6"
+            fontWeight={700}
+            sx={{ mb: 1.5, fontFamily: 'var(--font-poppins, Nunito, sans-serif)', color: 'var(--navy, #1B2145)' }}
+          >
             Atenção: downgrade de plano
           </Typography>
 
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            Seu plano atual (<strong>{currentPlan?.name}</strong>) oferece mais recursos do que o plano{' '}
-            <strong>{downgradeTarget?.name}</strong> que você está selecionando.
+          <Typography variant="body2" sx={{ mb: 1, color: 'var(--text-secondary, #6B7280)' }}>
+            Seu plano atual (<strong style={{ color: 'var(--text-primary, #1B2145)' }}>{currentPlan?.name}</strong>)
+            oferece mais recursos do que o plano{' '}
+            <strong style={{ color: 'var(--text-primary, #1B2145)' }}>{downgradeTarget?.name}</strong> que você está
+            selecionando.
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: 'var(--text-secondary, #6B7280)' }}>
             Tem certeza que deseja fazer o downgrade?
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
-          <Button variant="outlined" color="inherit" onClick={() => setDowngradeTarget(null)}>
+          <Button
+            variant="outlined"
+            onClick={() => setDowngradeTarget(null)}
+            sx={{ borderColor: 'var(--border, #E5E7EF)', color: 'var(--text-secondary, #6B7280)' }}
+          >
             Cancelar
           </Button>
           <Button
             variant="contained"
             onClick={handleConfirmDowngrade}
-            sx={{ bgcolor: '#f97316', '&:hover': { bgcolor: '#ea6c0a' } }}
+            sx={{
+              bgcolor: 'var(--orange, #F2793A)',
+              '&:hover': { bgcolor: 'var(--orange-dark, #D9612A)' },
+            }}
           >
             Sim, fazer downgrade
           </Button>

@@ -1,8 +1,16 @@
+/* ───────────────────────────────────────────────────────────────────────
+   Plans page — usa os design tokens definidos em global.tsx (:root).
+   Tipografia de destaque usa --font-poppins / --font-inter (next/font,
+   carregadas como variáveis CSS no layout.tsx).
+─────────────────────────────────────────────────────────────────────── */
+
 .page {
-  background: #eaeaef;
+  background: var(--page-bg, #f7f8fa);
   min-height: 100vh;
   padding: 56px 24px 80px;
 }
+
+/* ── Cabeçalho ──────────────────────────────── */
 
 .header {
   text-align: center;
@@ -10,26 +18,27 @@
 }
 
 .title {
+  font-family: var(--font-poppins, 'Nunito', sans-serif);
   font-size: 32px;
-  font-weight: 800;
-  color: #111;
+  font-weight: 700;
+  color: var(--navy, #1b2145);
   margin: 0 0 8px;
 }
 
 .subtitle {
   font-size: 15px;
-  color: #888;
+  color: var(--text-secondary, #6b7280);
   margin: 0;
 }
 
-/* ── Painel assinatura atual ─────────────────── */
+/* ── Painel assinatura atual ──────────────────── */
 
 .subscriptionCard {
   max-width: 680px;
   margin: 0 auto 32px;
-  background: #fff;
-  border: 1px solid #e8e8e8;
-  border-left: 4px solid #6366f1;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border, #e5e7ef);
+  border-left: 4px solid var(--navy, #1b2145);
   border-radius: 12px;
   padding: 20px 24px;
   display: flex;
@@ -48,26 +57,27 @@
 .subscriptionLabel {
   font-size: 11px;
   font-weight: 600;
-  color: #aaa;
+  color: var(--text-muted, #9ca3af);
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
 
 .subscriptionPlanName {
+  font-family: var(--font-poppins, 'Nunito', sans-serif);
   font-size: 22px;
-  font-weight: 700;
-  color: #111;
+  font-weight: 600;
+  color: var(--navy, #1b2145);
   line-height: 1.2;
 }
 
 .subscriptionRenewal {
   font-size: 13px;
-  color: #888;
+  color: var(--text-secondary, #6b7280);
 }
 
 .subscriptionCancelled {
   font-size: 13px;
-  color: #c44b1e;
+  color: var(--orange-dark, #d9612a);
 }
 
 .cancelLink {
@@ -76,7 +86,7 @@
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  color: #c44b1e;
+  color: var(--orange-dark, #d9612a);
   text-decoration: underline;
   text-underline-offset: 3px;
   padding: 0;
@@ -84,24 +94,24 @@
   flex-shrink: 0;
 
   &:hover {
-    color: #a03318;
+    color: var(--orange, #f2793a);
   }
 }
 
 .resumeBtn {
   background: transparent;
-  border: 1px solid #6366f1;
+  border: 1px solid var(--navy, #1b2145);
   border-radius: 8px;
   padding: 8px 18px;
   font-size: 13px;
   font-weight: 600;
-  color: #6366f1;
+  color: var(--navy, #1b2145);
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
 
   &:hover:not(:disabled) {
-    background: #f0f0ff;
+    background: var(--navy-tint, #f2f3fa);
   }
 
   &:disabled {
@@ -110,18 +120,40 @@
   }
 }
 
-/* ── Toggle ─────────────────────────────────── */
+/* ── Divisor decorativo ───────────────────────── */
+
+.sectionDivider {
+  display: flex;
+  align-items: center;
+  max-width: 1160px;
+  margin: 0 auto 40px;
+}
+
+.sectionDividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--border, #e5e7ef);
+}
+
+.sectionDividerIcon {
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  color: var(--orange, #f2793a);
+}
+
+/* ── Toggle Mensal/Anual ──────────────────────── */
 
 .toggleWrapper {
   display: flex;
   justify-content: center;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 
 .toggle {
   display: inline-flex;
-  background: #fff;
-  border: 1px solid #e5e5e5;
+  background: var(--navy-tint, #f2f3fa);
+  border: 1px solid var(--border, #e5e7ef);
   border-radius: 100px;
   padding: 4px;
   gap: 2px;
@@ -134,12 +166,12 @@
   padding: 8px 22px;
   font-size: 14px;
   font-weight: 500;
-  color: #999;
+  color: var(--text-secondary, #6b7280);
   cursor: pointer;
   transition: background 0.18s, color 0.18s;
 
   &.active {
-    background: #111;
+    background: var(--navy, #1b2145);
     color: #fff;
   }
 }
@@ -176,7 +208,7 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  background: #f97316;
+  background: var(--orange, #f2793a);
   color: #fff;
   font-size: 12px;
   font-weight: 700;
@@ -189,9 +221,9 @@
 /* ── Card ────────────────────────────────────── */
 
 .card {
-  background: #fff;
-  border: 1px solid #ebebeb;
-  border-radius: 16px;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border, #e5e7ef);
+  border-radius: 14px;
   padding: 28px 22px;
   height: 100%;
   display: flex;
@@ -200,16 +232,18 @@
   box-sizing: border-box;
 
   &Pro {
-    border: 2px solid #f97316;
+    border: 2px solid var(--orange, #f2793a);
+    background: var(--navy-tint, #f2f3fa);
   }
 }
 
 /* ── Cabeçalho do card ───────────────────────── */
 
 .planName {
+  font-family: var(--font-poppins, 'Nunito', sans-serif);
   font-size: 18px;
-  font-weight: 700;
-  color: #111;
+  font-weight: 600;
+  color: var(--navy, #1b2145);
   margin: 0;
 }
 
@@ -226,28 +260,29 @@
 }
 
 .priceAmount {
-  font-size: 30px;
-  font-weight: 800;
-  color: #111;
+  font-family: var(--font-poppins, 'Nunito', sans-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--navy, #1b2145);
   line-height: 1;
 }
 
 .priceSuffix {
   font-size: 13px;
-  color: #aaa;
+  color: var(--text-muted, #9ca3af);
 }
 
 .description {
   font-size: 13px;
-  color: #aaa;
+  color: var(--text-muted, #9ca3af);
   margin: 0;
 }
 
-/* ── Divisor ─────────────────────────────────── */
+/* ── Divisor interno ─────────────────────────── */
 
 .divider {
   height: 1px;
-  background: #f0f0f0;
+  background: var(--border, #e5e7ef);
 }
 
 /* ── Limites (CNPJs / usuários) ──────────────── */
@@ -263,12 +298,12 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #555;
+  color: var(--text-secondary, #6b7280);
 }
 
 .limitIcon {
   flex-shrink: 0;
-  color: #888;
+  color: var(--text-secondary, #6b7280);
 }
 
 /* ── Features ────────────────────────────────── */
@@ -288,10 +323,10 @@
 
 .featureLabel {
   font-size: 14px;
-  color: #555;
+  color: var(--text-secondary, #6b7280);
 
   &Off {
-    color: #ccc;
+    color: var(--text-muted, #9ca3af);
   }
 }
 
@@ -305,8 +340,8 @@
   flex-shrink: 0;
 
   &Check {
-    background: #fff3ec;
-    color: #f97316;
+    background: #fdece3;
+    color: var(--orange, #f2793a);
   }
 
   &X {
@@ -324,10 +359,13 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  border: 1px solid #e5e5e5;
-  background: #fff;
-  color: #555;
-  transition: border-color 0.18s, color 0.18s;
+  border: 1px solid var(--border, #e5e7ef);
+  background: var(--card-bg, #fff);
+  color: var(--text-secondary, #6b7280);
+  transition:
+    border-color 0.18s,
+    color 0.18s,
+    background 0.18s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -335,18 +373,18 @@
   margin-top: auto;
 
   &:hover:not(:disabled) {
-    border-color: #f97316;
-    color: #f97316;
+    border-color: var(--orange, #f2793a);
+    color: var(--orange, #f2793a);
   }
 
   &Pro {
-    background: #f97316;
-    border-color: #f97316;
+    background: var(--orange, #f2793a);
+    border-color: var(--orange, #f2793a);
     color: #fff;
 
     &:hover:not(:disabled) {
-      background: #ea6c0a;
-      border-color: #ea6c0a;
+      background: var(--orange-dark, #d9612a);
+      border-color: var(--orange-dark, #d9612a);
     }
   }
 
@@ -364,16 +402,17 @@
 }
 
 .sectionTitle {
+  font-family: var(--font-poppins, 'Nunito', sans-serif);
   font-size: 24px;
-  font-weight: 800;
-  color: #111;
+  font-weight: 700;
+  color: var(--navy, #1b2145);
   text-align: center;
   margin: 0 0 6px;
 }
 
 .sectionSubtitle {
   font-size: 14px;
-  color: #888;
+  color: var(--text-secondary, #6b7280);
   text-align: center;
   margin: 0 0 32px;
 }
@@ -389,15 +428,16 @@
 }
 
 .creditsAmount {
+  font-family: var(--font-poppins, 'Nunito', sans-serif);
   font-size: 40px;
-  font-weight: 800;
-  color: #f97316;
+  font-weight: 700;
+  color: var(--orange, #f2793a);
   line-height: 1;
 }
 
 .creditsLabel {
   font-size: 14px;
-  color: #888;
+  color: var(--text-muted, #9ca3af);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
