@@ -39,6 +39,7 @@ const KEY_SUGGESTIONS = ['suporte', 'relatorios', 'api_access', 'sla'];
 const VALUE_SUGGESTIONS: Record<string, string[]> = {
   suporte: ['email', 'email+chat', 'dedicado'],
   relatorios: ['basico', 'avancado'],
+  // eslint-disable-next-line camelcase
   api_access: ['true', 'false'],
 };
 
