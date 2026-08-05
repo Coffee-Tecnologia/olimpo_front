@@ -6,9 +6,9 @@ import { createAdminPlan, updateAdminPlan, AdminPlanFull, AdminSystem, PlanPaylo
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Alert from '@mui/material/Alert';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -30,6 +30,17 @@ interface Props {
 }
 
 type FeatureEntry = { name: string; value: string };
+
+/* ── Sugestões de features conhecidas pelo front público (PlanCard.tsx).
+   O admin pode usar qualquer chave/valor — as sugestões abaixo aparecem
+   no autocomplete mas não restringem o input (freeSolo). ── */
+const KEY_SUGGESTIONS = ['suporte', 'relatorios', 'api_access', 'sla'];
+
+const VALUE_SUGGESTIONS: Record<string, string[]> = {
+  suporte: ['email', 'email+chat', 'dedicado'],
+  relatorios: ['basico', 'avancado'],
+  api_access: ['true', 'false'],
+};
 
 const emptyForm = (): Omit<PlanPayload, 'features'> => ({
   name: '',
@@ -186,34 +197,70 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
           Features
         </Typography>
 
-        <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
-          {features.map((f) => (
-            <Chip
-              key={f.name}
-              label={`${f.name}: ${f.value}`}
-              onDelete={() => removeFeature(f.name)}
-              deleteIcon={<DeleteIcon />}
-              size="small"
-            />
-          ))}
-        </Box>
+        {/* Features cadastradas */}
+        {features.length === 0 ? (
+          <Typography variant="body2" color="text.secondary" mb={2}>
+            Nenhuma feature cadastrada.
+          </Typography>
+        ) : (
+          <Box display="flex" flexDirection="column" gap={0.5} mb={2}>
+            {features.map((f) => (
+              <Box
+                key={f.name}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{
+                  px: 1.5,
+                  py: 0.75,
+                  bgcolor: 'grey.50',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'grey.200',
+                }}
+              >
+                <Typography variant="body2">
+                  <strong>{f.name}</strong>: {f.value}
+                </Typography>
+                <IconButton size="small" onClick={() => removeFeature(f.name)} color="error">
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            ))}
+          </Box>
+        )}
 
+        {/* Adicionar feature — autocomplete com sugestões, mas aceita qualquer valor */}
         <Box display="flex" gap={1} alignItems="flex-start">
-          <TextField
+          <Autocomplete
+            freeSolo
             size="small"
-            placeholder="nome (ex: api_access)"
+            options={KEY_SUGGESTIONS.filter((k) => !features.find((f) => f.name === k))}
             value={newFeature.name}
-            onChange={(e) => setNewFeature((f) => ({ ...f, name: e.target.value }))}
+            onInputChange={(_, v) => setNewFeature({ name: v, value: '' })}
+            renderInput={(params) => <TextField {...params} label="Chave" placeholder="ex: suporte" />}
             sx={{ flex: 1 }}
           />
-          <TextField
+
+          <Autocomplete
+            freeSolo
             size="small"
-            placeholder="valor (ex: true)"
+            options={VALUE_SUGGESTIONS[newFeature.name] ?? []}
             value={newFeature.value}
-            onChange={(e) => setNewFeature((f) => ({ ...f, value: e.target.value }))}
+            onInputChange={(_, v) => setNewFeature((f) => ({ ...f, value: v }))}
+            disabled={!newFeature.name}
+            renderInput={(params) => (
+              <TextField {...params} label="Valor" placeholder={newFeature.name === 'sla' ? 'ex: 99.9%' : 'ex: true'} />
+            )}
             sx={{ flex: 1 }}
           />
-          <IconButton color="primary" onClick={addFeature}>
+
+          <IconButton
+            color="primary"
+            onClick={addFeature}
+            disabled={!newFeature.name || !newFeature.value}
+            sx={{ mt: 0.5 }}
+          >
             <AddIcon />
           </IconButton>
         </Box>

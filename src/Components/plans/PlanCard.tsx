@@ -14,8 +14,15 @@ const CANONICAL_FEATURES: Array<{
 }> = [
   {
     key: 'suporte',
+    // Valores conhecidos recebem label amigável; valor customizado (ex: "email+GLPI") é exibido diretamente.
     getOnLabel: (v) =>
-      v === 'dedicado' ? 'Suporte dedicado' : v === 'email+chat' ? 'Suporte e-mail + chat' : 'Suporte por e-mail',
+      v === 'dedicado'
+        ? 'Suporte dedicado'
+        : v === 'email+chat'
+          ? 'Suporte e-mail + chat'
+          : v === 'email'
+            ? 'Suporte por e-mail'
+            : `Suporte — ${v}`,
     offLabel: 'Suporte',
   },
   {
@@ -26,6 +33,8 @@ const CANONICAL_FEATURES: Array<{
   { key: 'api_access', getOnLabel: () => 'API access', offLabel: 'API access' },
   { key: 'sla', getOnLabel: (v) => `SLA ${v}`, offLabel: 'SLA garantido' },
 ];
+
+const CANONICAL_KEYS = new Set(CANONICAL_FEATURES.map((f) => f.key));
 
 const formatPrice = (cents: number) =>
   new Intl.NumberFormat('pt-BR', {
@@ -171,6 +180,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
         <div className={styles.divider} />
 
         <div className={styles.features}>
+          {/* Features canônicas — com label formatado e estado on/off */}
           {CANONICAL_FEATURES.map(({ key, getOnLabel, offLabel }) => {
             const value = featuresMap[key];
             const isOn = value !== undefined && value !== 'false';
@@ -183,6 +193,16 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
               </div>
             );
           })}
+
+          {/* Features extras (não canônicas) — valor do banco é o label exibido */}
+          {plan.planFeatures
+            .filter((f) => !CANONICAL_KEYS.has(f.name) && f.value !== 'false')
+            .map((f) => (
+              <div key={f.name} className={styles.featureItem}>
+                <CheckIcon />
+                <span className={styles.featureLabel}>{f.value}</span>
+              </div>
+            ))}
         </div>
 
         <button
