@@ -1,8 +1,8 @@
 'use client';
 
+import { Plan, BillingCycle } from '@/api/plans';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { Plan, BillingCycle } from '@/api/plans';
 import styles from './plans.module.scss';
 
 /* ── Mapeamento de features ─────────────────── */
@@ -36,6 +36,25 @@ const formatPrice = (cents: number) =>
   }).format(cents / 100);
 
 /* ── Componentes internos ───────────────────── */
+
+const CnpjIcon: React.FC = () => (
+  <svg className={styles.limitIcon} width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <rect x="1.5" y="2.5" width="13" height="11" rx="2" stroke="currentColor" strokeWidth="1.4" />
+    <path d="M5 6h6M5 9h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+  </svg>
+);
+
+const UserIcon: React.FC = () => (
+  <svg className={styles.limitIcon} width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <circle cx="8" cy="5.5" r="2.8" stroke="currentColor" strokeWidth="1.4" />
+    <path
+      d="M2.5 14c0-3 2.5-5.2 5.5-5.2s5.5 2.2 5.5 5.2"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+    />
+  </svg>
+);
 
 const CheckIcon: React.FC = () => (
   <div className={`${styles.featureIcon} ${styles.featureIconCheck}`}>
@@ -88,11 +107,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
             <span className={styles.creditsLabel}>créditos</span>
           </div>
 
-          <button
-            className={styles.btn}
-            disabled={isSubscribing}
-            onClick={() => onSubscribe(plan.id)}
-          >
+          <button className={styles.btn} disabled={isSubscribing} onClick={() => onSubscribe(plan.id)}>
             {isSubscribing ? (
               <CircularProgress size={16} thickness={5} sx={{ color: '#f97316' }} />
             ) : (
@@ -105,9 +120,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
   }
 
   const displayCents =
-    !isDegust && billingCycle === 'annual' && plan.annualPriceCents
-      ? plan.annualPriceCents
-      : plan.monthlyPriceCents;
+    !isDegust && billingCycle === 'annual' && plan.annualPriceCents ? plan.annualPriceCents : plan.monthlyPriceCents;
 
   const priceSuffix = isDegust ? '/único' : '/mês';
 
@@ -140,11 +153,11 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
 
         <div className={styles.limits}>
           <div className={styles.limitItem}>
-            <span className={styles.dot} />
+            <CnpjIcon />
             Até {plan.maxCnpjs} CNPJs
           </div>
           <div className={styles.limitItem}>
-            <span className={styles.dot} />
+            <UserIcon />
             Até {plan.maxUsers} usuários
           </div>
         </div>

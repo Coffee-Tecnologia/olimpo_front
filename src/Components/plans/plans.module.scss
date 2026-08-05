@@ -1,5 +1,5 @@
 .page {
-  background: #f8f8f8;
+  background: #eaeaef;
   min-height: 100vh;
   padding: 56px 24px 80px;
 }
@@ -20,6 +20,94 @@
   font-size: 15px;
   color: #888;
   margin: 0;
+}
+
+/* ── Painel assinatura atual ─────────────────── */
+
+.subscriptionCard {
+  max-width: 680px;
+  margin: 0 auto 32px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-left: 4px solid #6366f1;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.subscriptionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.subscriptionLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.subscriptionPlanName {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.2;
+}
+
+.subscriptionRenewal {
+  font-size: 13px;
+  color: #888;
+}
+
+.subscriptionCancelled {
+  font-size: 13px;
+  color: #c44b1e;
+}
+
+.cancelLink {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #c44b1e;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    color: #a03318;
+  }
+}
+
+.resumeBtn {
+  background: transparent;
+  border: 1px solid #6366f1;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6366f1;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    background: #f0f0ff;
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
 }
 
 /* ── Toggle ─────────────────────────────────── */
@@ -178,12 +266,9 @@
   color: #555;
 }
 
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #f97316;
+.limitIcon {
   flex-shrink: 0;
+  color: #888;
 }
 
 /* ── Features ────────────────────────────────── */

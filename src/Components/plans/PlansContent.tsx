@@ -37,8 +37,7 @@ const sortPlans = (plans: Plan[]) =>
       PLAN_ORDER.indexOf(b.name as (typeof PLAN_ORDER)[number]),
   );
 
-const sortCreditPacks = (plans: Plan[]) =>
-  [...plans].sort((a, b) => (a.creditsAmount ?? 0) - (b.creditsAmount ?? 0));
+const sortCreditPacks = (plans: Plan[]) => [...plans].sort((a, b) => (a.creditsAmount ?? 0) - (b.creditsAmount ?? 0));
 
 function formatDate(iso: string | null | undefined): string {
   if (!iso) return '';
@@ -108,9 +107,7 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
     if (!plan) return;
 
     const isDowngrade =
-      plan.planType !== 'credit_pack' &&
-      currentPlan !== null &&
-      plan.monthlyPriceCents < currentPlan.monthlyPriceCents;
+      plan.planType !== 'credit_pack' && currentPlan !== null && plan.monthlyPriceCents < currentPlan.monthlyPriceCents;
 
     if (isDowngrade) {
       setDowngradeTarget(plan);
@@ -184,69 +181,39 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
 
       {/* ── Painel Gerenciar assinatura ──────────────────────────────────────── */}
       {currentPlan && (
-        <Box
-          sx={{
-            maxWidth: 560,
-            mx: 'auto',
-            mb: 4,
-            p: 3,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-          }}
-        >
-          <Typography variant="subtitle2" color="text.secondary">
-            Assinatura atual
-          </Typography>
-          <Typography variant="h6" fontWeight={700}>
-            {currentPlan.name}
-          </Typography>
-
-          {currentAccount?.cancelAtPeriodEnd ? (
-            <>
-              <Typography variant="body2" color="error.main">
-                Cancelado — acesso até {formatDate(currentAccount.accessEndsAt ?? currentAccount.currentPeriodEnd)}
-              </Typography>
-              {resumeError && (
-                <Alert severity="error" onClose={() => setResumeError(null)}>
-                  {resumeError}
-                </Alert>
-              )}
-              <Box mt={1}>
-                <Button
-                  variant="outlined"
-                  onClick={handleResume}
-                  disabled={resuming}
-                  startIcon={resuming ? <CircularProgress size={16} /> : undefined}
-                >
-                  {resuming ? 'Reativando...' : 'Reativar assinatura'}
-                </Button>
-              </Box>
-            </>
-          ) : (
-            <>
-              {currentAccount?.currentPeriodEnd && (
-                <Typography variant="body2" color="text.secondary">
+        <>
+          <div className={styles.subscriptionCard}>
+            <div className={styles.subscriptionInfo}>
+              <span className={styles.subscriptionLabel}>Assinatura atual</span>
+              <span className={styles.subscriptionPlanName}>{currentPlan.name}</span>{' '}
+              {currentAccount?.cancelAtPeriodEnd ? (
+                <span className={styles.subscriptionCancelled}>
+                  Cancelado — acesso até {formatDate(currentAccount.accessEndsAt ?? currentAccount.currentPeriodEnd)}
+                </span>
+              ) : currentAccount?.currentPeriodEnd ? (
+                <span className={styles.subscriptionRenewal}>
                   Renova em {formatDate(currentAccount.currentPeriodEnd)}
-                </Typography>
-              )}
-              <Box mt={1}>
-                <Button
-                  variant="text"
-                  color="inherit"
-                  size="small"
-                  sx={{ color: 'text.secondary', textDecoration: 'underline', p: 0 }}
-                  onClick={handleOpenCancel}
-                >
-                  Cancelar assinatura
-                </Button>
-              </Box>
-            </>
+                </span>
+              ) : null}
+            </div>
+
+            {currentAccount?.cancelAtPeriodEnd ? (
+              <button className={styles.resumeBtn} onClick={handleResume} disabled={resuming}>
+                {resuming ? 'Reativando...' : 'Reativar assinatura'}
+              </button>
+            ) : (
+              <button className={styles.cancelLink} onClick={handleOpenCancel}>
+                Cancelar assinatura
+              </button>
+            )}
+          </div>
+
+          {resumeError && (
+            <Alert severity="error" onClose={() => setResumeError(null)} sx={{ maxWidth: 680, mx: 'auto', mb: 2 }}>
+              {resumeError}
+            </Alert>
           )}
-        </Box>
+        </>
       )}
 
       {!loading && <BillingToggle value={billingCycle} onChange={setBillingCycle} />}
@@ -305,17 +272,47 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
 
       {/* ── Dialog: downgrade ───────────────────────────────────────────────── */}
       <Dialog open={downgradeTarget !== null} onClose={() => setDowngradeTarget(null)} maxWidth="xs" fullWidth>
-        <DialogTitle>Atenção: downgrade de plano</DialogTitle>
-        <DialogContent>
-          <Typography>
+        <DialogContent sx={{ pt: 3, pb: 1 }}>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              bgcolor: '#fff5ee',
+              borderRadius: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
+            }}
+          >
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+              <path d="M13 2L24 21H2L13 2Z" fill="#f97316" />
+              <rect x="12" y="9.5" width="2" height="6" rx="1" fill="white" />
+              <rect x="12" y="17" width="2" height="2" rx="1" fill="white" />
+            </svg>
+          </Box>
+
+          <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5 }}>
+            Atenção: downgrade de plano
+          </Typography>
+
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             Seu plano atual (<strong>{currentPlan?.name}</strong>) oferece mais recursos do que o plano{' '}
             <strong>{downgradeTarget?.name}</strong> que você está selecionando.
           </Typography>
-          <Typography sx={{ mt: 1 }}>Tem certeza que deseja fazer o downgrade?</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Tem certeza que deseja fazer o downgrade?
+          </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDowngradeTarget(null)}>Cancelar</Button>
-          <Button variant="contained" color="warning" onClick={handleConfirmDowngrade}>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+          <Button variant="outlined" color="inherit" onClick={() => setDowngradeTarget(null)}>
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleConfirmDowngrade}
+            sx={{ bgcolor: '#f97316', '&:hover': { bgcolor: '#ea6c0a' } }}
+          >
             Sim, fazer downgrade
           </Button>
         </DialogActions>
