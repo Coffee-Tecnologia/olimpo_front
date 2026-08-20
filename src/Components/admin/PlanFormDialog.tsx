@@ -37,13 +37,14 @@ type FeatureEntry = { name: string; value: string };
 /* ── Sugestões de features conhecidas pelo front público (PlanCard.tsx).
    O admin pode usar qualquer chave/valor — as sugestões abaixo aparecem
    no autocomplete mas não restringem o input (freeSolo). ── */
-const KEY_SUGGESTIONS = ['suporte', 'relatorios', 'api_access', 'sla', 'contact_link'];
+const KEY_SUGGESTIONS = ['suporte', 'relatorios', 'api_access', 'sla', 'contact_link', 'popular'];
 
 const VALUE_SUGGESTIONS: Record<string, string[]> = {
   suporte: ['email', 'email+chat', 'dedicado'],
   relatorios: ['basico', 'avancado'],
   // eslint-disable-next-line camelcase
   api_access: ['true', 'false'],
+  popular: ['true', 'false'],
 };
 
 const emptyForm = (): Omit<PlanPayload, 'features'> => ({
