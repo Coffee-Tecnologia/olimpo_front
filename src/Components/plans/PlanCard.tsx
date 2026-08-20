@@ -139,10 +139,13 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
 
   const priceSuffix = isDegust ? '/único' : '/mês';
 
+  const annualTotal =
+    billingCycle === 'annual' && plan.annualPriceCents ? formatPrice(plan.annualPriceCents * 12) : null;
+
   const cycleDescription = isDegust
     ? '30 dias · sem renovação automática'
-    : billingCycle === 'annual'
-      ? 'Cobrança anual com desconto'
+    : billingCycle === 'annual' && annualTotal
+      ? `Cobrança anual · ${annualTotal}/ano`
       : 'Cancele quando quiser';
 
   const featuresMap = Object.fromEntries(plan.planFeatures.map((f) => [f.name, f.value]));
