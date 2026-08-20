@@ -37,7 +37,7 @@ type FeatureEntry = { name: string; value: string };
 /* ── Sugestões de features conhecidas pelo front público (PlanCard.tsx).
    O admin pode usar qualquer chave/valor — as sugestões abaixo aparecem
    no autocomplete mas não restringem o input (freeSolo). ── */
-const KEY_SUGGESTIONS = ['suporte', 'relatorios', 'api_access', 'sla'];
+const KEY_SUGGESTIONS = ['suporte', 'relatorios', 'api_access', 'sla', 'contact_link'];
 
 const VALUE_SUGGESTIONS: Record<string, string[]> = {
   suporte: ['email', 'email+chat', 'dedicado'],
@@ -49,6 +49,7 @@ const VALUE_SUGGESTIONS: Record<string, string[]> = {
 const emptyForm = (): Omit<PlanPayload, 'features'> => ({
   name: '',
   system: '',
+  planType: 'subscription',
   maxCnpjs: null,
   maxUsers: null,
   maxNotes: null,
@@ -75,6 +76,7 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
       setForm({
         name: plan.name,
         system: plan.system,
+        planType: plan.planType,
         maxCnpjs: plan.maxCnpjs,
         maxUsers: plan.maxUsers,
         maxNotes: plan.maxNotes,
@@ -159,6 +161,19 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
                     {s.name}
                   </MenuItem>
                 ))}
+            </TextField>
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              select
+              label="Tipo"
+              value={form.planType ?? 'subscription'}
+              onChange={(e) => set('planType', e.target.value)}
+              fullWidth
+            >
+              <MenuItem value="subscription">Assinatura</MenuItem>
+              <MenuItem value="enterprise">Enterprise (sob consulta)</MenuItem>
+              <MenuItem value="credit_pack">Pacote de créditos</MenuItem>
             </TextField>
           </Grid>
           <Grid size={{ xs: 6 }}>

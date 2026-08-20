@@ -98,8 +98,58 @@ interface PlanCardProps {
 
 export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscribing, onSubscribe }) => {
   const isCreditPack = plan.planType === 'credit_pack';
+  const isEnterprise = plan.planType === 'enterprise';
   const isDegust = plan.name === 'Degust';
   const isPro = plan.name === 'Pro';
+
+  /* ── Enterprise — card de contato ── */
+  if (isEnterprise) {
+    const featuresMap = Object.fromEntries(plan.planFeatures.map((f) => [f.name, f.value]));
+    const contactLink = featuresMap['contact_link'] ?? 'https://wa.me/55';
+
+    return (
+      <div className={styles.cardWrapper}>
+        <div className={`${styles.card} ${styles.cardEnterprise}`}>
+          <div>
+            <p className={styles.planName}>{plan.name}</p>
+            <span className={styles.enterpriseBadge}>Sob consulta</span>
+          </div>
+
+          <div className={styles.priceRow}>
+            <p className={styles.enterpriseTagline}>
+              Solução personalizada para o volume e as integrações do seu negócio.
+            </p>
+          </div>
+
+          <div className={styles.divider} />
+
+          <div className={styles.limits}>
+            <div className={`${styles.limitItem} ${styles.limitItemEnterprise}`}>
+              <NotesIcon />
+              Volume negociado
+            </div>
+          </div>
+
+          <div className={styles.divider} />
+
+          <div className={styles.features}>
+            {plan.planFeatures
+              .filter((f) => f.name !== 'contact_link' && f.value !== 'false')
+              .map((f) => (
+                <div key={f.name} className={styles.featureItem}>
+                  <CheckIcon />
+                  <span className={styles.featureLabel}>{f.value}</span>
+                </div>
+              ))}
+          </div>
+
+          <a href={contactLink} target="_blank" rel="noopener noreferrer" className={styles.btnEnterprise}>
+            Falar com especialista
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   if (isCreditPack) {
     return (

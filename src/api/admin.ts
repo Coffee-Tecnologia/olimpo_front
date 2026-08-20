@@ -165,6 +165,7 @@ export interface AdminPlanFull {
   id: string;
   name: string;
   system: string;
+  planType: 'subscription' | 'credit_pack' | 'enterprise';
   maxCnpjs: number | null;
   maxUsers: number | null;
   maxNotes: number | null;
@@ -182,6 +183,7 @@ export type AdminPlansBySystem = Record<string, AdminPlanFull[]>;
 export interface PlanPayload {
   name: string;
   system: string;
+  planType?: 'subscription' | 'credit_pack' | 'enterprise';
   maxCnpjs: number | null;
   maxUsers: number | null;
   maxNotes: number | null;

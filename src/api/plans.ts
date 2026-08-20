@@ -5,7 +5,7 @@ export interface PlanFeature {
   value: string;
 }
 
-export type PlanType = 'subscription' | 'credit_pack';
+export type PlanType = 'subscription' | 'credit_pack' | 'enterprise';
 
 export interface Plan {
   id: string;

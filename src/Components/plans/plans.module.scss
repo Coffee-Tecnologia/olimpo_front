@@ -394,6 +394,84 @@
   }
 }
 
+/* ── Card Enterprise ─────────────────────────── */
+
+.cardEnterprise {
+  border: 2px solid var(--navy, #1b2145);
+  background: var(--navy, #1b2145);
+  color: #fff;
+
+  .planName {
+    color: #fff;
+  }
+
+  .divider {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .limitItem {
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .limitIcon {
+    color: var(--orange, #f2793a);
+    opacity: 1;
+  }
+
+  .featureLabel {
+    color: rgba(255, 255, 255, 0.82);
+  }
+}
+
+.enterpriseBadge {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--orange, #f2793a);
+  background: rgba(242, 121, 58, 0.15);
+  border: 1px solid rgba(242, 121, 58, 0.3);
+  border-radius: 6px;
+  padding: 2px 10px;
+}
+
+.enterpriseTagline {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.limitItemEnterprise {
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-weight: 500;
+}
+
+.btnEnterprise {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  font-family: var(--font-inter, 'Inter', sans-serif);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--orange, #f2793a);
+  border: none;
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.18s;
+  margin-top: auto;
+
+  &:hover {
+    background: var(--orange-dark, #d9612a);
+  }
+}
+
 /* ── Seção de pacotes de créditos ────────────── */
 
 .creditSection {
