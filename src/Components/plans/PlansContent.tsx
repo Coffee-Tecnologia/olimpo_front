@@ -96,8 +96,11 @@ export const PlansContent: React.FC<PlansContentProps> = ({ system, token }) => 
     try {
       const { checkoutUrl } = await createCheckout(token, plan.id, cycle);
       window.location.href = checkoutUrl;
-    } catch {
-      setSubscribeError('Erro ao iniciar a compra. Tente novamente.');
+    } catch (e: unknown) {
+      const msg =
+        (e as { response?: { data?: { error?: string } } })?.response?.data?.error ??
+        'Erro ao iniciar a compra. Tente novamente.';
+      setSubscribeError(msg);
       setSubscribingPlanId(null);
     }
   };

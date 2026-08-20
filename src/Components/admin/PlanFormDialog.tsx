@@ -8,10 +8,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -233,6 +233,10 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
         </Box>
 
         <Collapse in={stripeOpen}>
+          <Alert severity="warning" sx={{ mt: 1, mb: 1.5 }}>
+            <strong>Atenção:</strong> esses IDs são usados diretamente na API do Stripe. Alterar um ID errado pode
+            quebrar o checkout ou vincular pagamentos ao plano errado. Só mexa se tiver certeza.
+          </Alert>
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
             <Grid size={{ xs: 12 }}>
               <TextField
