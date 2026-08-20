@@ -398,29 +398,7 @@
 
 .cardEnterprise {
   border: 2px solid var(--navy, #1b2145);
-  background: var(--navy, #1b2145);
-  color: #fff;
-
-  .planName {
-    color: #fff;
-  }
-
-  .divider {
-    background: rgba(255, 255, 255, 0.12);
-  }
-
-  .limitItem {
-    color: rgba(255, 255, 255, 0.75);
-  }
-
-  .limitIcon {
-    color: var(--orange, #f2793a);
-    opacity: 1;
-  }
-
-  .featureLabel {
-    color: rgba(255, 255, 255, 0.82);
-  }
+  background: var(--card-bg, #fff);
 }
 
 .enterpriseBadge {
@@ -431,22 +409,22 @@
   letter-spacing: 0.6px;
   text-transform: uppercase;
   color: var(--orange, #f2793a);
-  background: rgba(242, 121, 58, 0.15);
-  border: 1px solid rgba(242, 121, 58, 0.3);
+  background: var(--check-bg, #fdece3);
+  border: 1px solid rgba(242, 121, 58, 0.25);
   border-radius: 6px;
   padding: 2px 10px;
 }
 
 .enterpriseTagline {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--text-secondary, #6b7280);
   line-height: 1.55;
   margin: 0;
 }
 
 .limitItemEnterprise {
-  color: rgba(255, 255, 255, 0.75) !important;
-  font-weight: 500;
+  color: var(--navy, #1b2145) !important;
+  font-weight: 600;
 }
 
 .btnEnterprise {
@@ -460,7 +438,7 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  background: var(--orange, #f2793a);
+  background: var(--navy, #1b2145);
   border: none;
   color: #fff;
   text-decoration: none;
@@ -468,7 +446,7 @@
   margin-top: auto;
 
   &:hover {
-    background: var(--orange-dark, #d9612a);
+    background: var(--navy-soft, #2e3868);
   }
 }
 

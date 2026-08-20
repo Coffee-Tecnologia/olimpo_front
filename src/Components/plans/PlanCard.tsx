@@ -136,8 +136,20 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
           <div className={styles.divider} />
 
           <div className={styles.features}>
+            {/* "Todas as funcionalidades do plano X" — sempre primeiro */}
             {plan.planFeatures
-              .filter((f) => f.name !== 'contact_link' && f.value !== 'false')
+              .filter((f) => !META_KEYS.has(f.name) && f.value !== 'false' && f.value.toLowerCase().startsWith('todas'))
+              .map((f) => (
+                <div key={f.name} className={styles.featureItem}>
+                  <CheckIcon />
+                  <span className={styles.featureLabel}>{f.value}</span>
+                </div>
+              ))}
+            {/* Demais features */}
+            {plan.planFeatures
+              .filter(
+                (f) => !META_KEYS.has(f.name) && f.value !== 'false' && !f.value.toLowerCase().startsWith('todas'),
+              )
               .map((f) => (
                 <div key={f.name} className={styles.featureItem}>
                   <CheckIcon />
