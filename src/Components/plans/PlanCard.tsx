@@ -37,7 +37,7 @@ const CANONICAL_FEATURES: Array<{
 const CANONICAL_KEYS = new Set(CANONICAL_FEATURES.map((f) => f.key));
 
 // Chaves internas — nunca exibidas como item de feature no card público
-const META_KEYS = new Set(['contact_link']);
+const META_KEYS = new Set(['contact_link', 'popular']);
 
 const formatPrice = (cents: number) =>
   new Intl.NumberFormat('pt-BR', {
@@ -103,16 +103,17 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
   const isCreditPack = plan.planType === 'credit_pack';
   const isEnterprise = plan.planType === 'enterprise';
   const isDegust = plan.name === 'Degust';
-  const isPro = plan.name === 'Pro';
+  const featuresMapGlobal = Object.fromEntries(plan.planFeatures.map((f) => [f.name, f.value]));
+  const isPopular = featuresMapGlobal['popular'] === 'true';
 
   /* ── Enterprise — card de contato ── */
   if (isEnterprise) {
-    const featuresMap = Object.fromEntries(plan.planFeatures.map((f) => [f.name, f.value]));
-    const contactLink = featuresMap['contact_link'] ?? 'https://wa.me/55';
+    const contactLink = featuresMapGlobal['contact_link'] ?? 'https://wa.me/55';
 
     return (
       <div className={styles.cardWrapper}>
-        <div className={`${styles.card} ${styles.cardEnterprise}`}>
+        {isPopular && <span className={styles.badge}>Mais popular</span>}
+        <div className={`${styles.card} ${styles.cardEnterprise} ${isPopular ? styles.cardPro : ''}`}>
           <div>
             <p className={styles.planName}>{plan.name}</p>
             <span className={styles.enterpriseBadge}>Sob consulta</span>
@@ -158,7 +159,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
               ))}
           </div>
 
-          <a href={contactLink} target="_blank" rel="noopener noreferrer" className={styles.btnEnterprise}>
+          <a href={contactLink} target="_blank" rel="noopener noreferrer" className={styles.btn}>
             Falar com especialista
           </a>
         </div>
@@ -213,15 +214,15 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
       ? `Cobrança anual · ${annualTotal}/ano`
       : 'Cancele quando quiser';
 
-  const featuresMap = Object.fromEntries(plan.planFeatures.map((f) => [f.name, f.value]));
+  const featuresMap = featuresMapGlobal;
 
   const buttonLabel = isDegust ? 'Começar agora' : 'Assinar';
 
   return (
     <div className={styles.cardWrapper}>
-      {isPro && <span className={styles.badge}>Mais popular</span>}
+      {isPopular && <span className={styles.badge}>Mais popular</span>}
 
-      <div className={`${styles.card} ${isPro ? styles.cardPro : ''}`}>
+      <div className={`${styles.card} ${isPopular ? styles.cardPro : ''}`}>
         <p className={styles.planName}>{plan.name}</p>
 
         <div className={styles.priceRow}>
@@ -302,12 +303,12 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
         </div>
 
         <button
-          className={`${styles.btn} ${isPro ? styles.btnPro : ''}`}
+          className={`${styles.btn} ${isPopular ? styles.btnPro : ''}`}
           disabled={isSubscribing}
           onClick={() => onSubscribe(plan.id)}
         >
           {isSubscribing ? (
-            <CircularProgress size={16} thickness={5} sx={{ color: isPro ? '#fff' : '#f97316' }} />
+            <CircularProgress size={16} thickness={5} sx={{ color: isPopular ? '#fff' : '#f97316' }} />
           ) : (
             buttonLabel
           )}
