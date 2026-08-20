@@ -36,6 +36,9 @@ const CANONICAL_FEATURES: Array<{
 
 const CANONICAL_KEYS = new Set(CANONICAL_FEATURES.map((f) => f.key));
 
+// Chaves internas — nunca exibidas como item de feature no card público
+const META_KEYS = new Set(['contact_link']);
+
 const formatPrice = (cents: number) =>
   new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -248,7 +251,9 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
         <div className={styles.features}>
           {/* "Todas as funcionalidades do plano X" — sempre primeiro */}
           {plan.planFeatures
-            .filter((f) => !CANONICAL_KEYS.has(f.name) && f.value.toLowerCase().startsWith('todas'))
+            .filter(
+              (f) => !CANONICAL_KEYS.has(f.name) && !META_KEYS.has(f.name) && f.value.toLowerCase().startsWith('todas'),
+            )
             .map((f) => (
               <div key={f.name} className={styles.featureItem}>
                 <CheckIcon />
@@ -267,10 +272,14 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
             </div>
           ))}
 
-          {/* Features extras restantes — sem "Todas as funcionalidades" */}
+          {/* Features extras restantes — sem "Todas as funcionalidades" e sem chaves internas */}
           {plan.planFeatures
             .filter(
-              (f) => !CANONICAL_KEYS.has(f.name) && f.value !== 'false' && !f.value.toLowerCase().startsWith('todas'),
+              (f) =>
+                !CANONICAL_KEYS.has(f.name) &&
+                !META_KEYS.has(f.name) &&
+                f.value !== 'false' &&
+                !f.value.toLowerCase().startsWith('todas'),
             )
             .map((f) => (
               <div key={f.name} className={styles.featureItem}>
