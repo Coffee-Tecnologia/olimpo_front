@@ -13,6 +13,7 @@ export interface Plan {
   planType: PlanType;
   maxCnpjs: number | null;
   maxUsers: number | null;
+  maxNotes: number | null;
   creditsAmount: number | null;
   monthlyPriceCents: number;
   annualPriceCents: number | null;

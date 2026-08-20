@@ -73,8 +73,9 @@ export interface AdminPlan {
   id: string;
   name: string;
   system: string;
-  maxCnpjs: number;
-  maxUsers: number;
+  maxCnpjs: number | null;
+  maxUsers: number | null;
+  maxNotes: number | null;
 }
 
 export interface AdminAccount {
@@ -164,11 +165,15 @@ export interface AdminPlanFull {
   id: string;
   name: string;
   system: string;
-  maxCnpjs: number;
-  maxUsers: number;
+  maxCnpjs: number | null;
+  maxUsers: number | null;
+  maxNotes: number | null;
   monthlyPriceCents: number;
   annualPriceCents: number | null;
   active: boolean;
+  stripeProductId: string | null;
+  stripeMonthlyPriceId: string | null;
+  stripeAnnualPriceId: string | null;
   planFeatures: AdminPlanFeature[];
 }
 
@@ -177,11 +182,15 @@ export type AdminPlansBySystem = Record<string, AdminPlanFull[]>;
 export interface PlanPayload {
   name: string;
   system: string;
-  maxCnpjs: number;
-  maxUsers: number;
+  maxCnpjs: number | null;
+  maxUsers: number | null;
+  maxNotes: number | null;
   monthlyPriceCents: number;
   annualPriceCents?: number | null;
   active?: boolean;
+  stripeProductId?: string | null;
+  stripeMonthlyPriceId?: string | null;
+  stripeAnnualPriceId?: string | null;
   features?: Record<string, string>;
 }
 

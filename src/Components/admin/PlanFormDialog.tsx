@@ -5,7 +5,10 @@ import { useEffect, useState } from 'react';
 import { createAdminPlan, updateAdminPlan, AdminPlanFull, AdminSystem, PlanPayload } from '@/api/admin';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -46,11 +49,15 @@ const VALUE_SUGGESTIONS: Record<string, string[]> = {
 const emptyForm = (): Omit<PlanPayload, 'features'> => ({
   name: '',
   system: '',
-  maxCnpjs: 2,
-  maxUsers: 5,
+  maxCnpjs: null,
+  maxUsers: null,
+  maxNotes: null,
   monthlyPriceCents: 0,
   annualPriceCents: null,
   active: true,
+  stripeProductId: null,
+  stripeMonthlyPriceId: null,
+  stripeAnnualPriceId: null,
 });
 
 export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, systems, onClose, onSaved }) => {
@@ -59,6 +66,7 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
   const [newFeature, setNewFeature] = useState<FeatureEntry>({ name: '', value: '' });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stripeOpen, setStripeOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -69,9 +77,13 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
         system: plan.system,
         maxCnpjs: plan.maxCnpjs,
         maxUsers: plan.maxUsers,
+        maxNotes: plan.maxNotes,
         monthlyPriceCents: plan.monthlyPriceCents,
         annualPriceCents: plan.annualPriceCents,
         active: plan.active,
+        stripeProductId: plan.stripeProductId,
+        stripeMonthlyPriceId: plan.stripeMonthlyPriceId,
+        stripeAnnualPriceId: plan.stripeAnnualPriceId,
       });
       setFeatures(plan.planFeatures.map((f) => ({ name: f.name, value: f.value })));
     } else {
@@ -153,18 +165,30 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
             <TextField
               label="Máx. CNPJs"
               type="number"
-              value={form.maxCnpjs}
-              onChange={(e) => set('maxCnpjs', Number(e.target.value))}
+              value={form.maxCnpjs ?? ''}
+              onChange={(e) => set('maxCnpjs', e.target.value ? Number(e.target.value) : null)}
               fullWidth
+              helperText="Deixe vazio para ilimitado"
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <TextField
               label="Máx. usuários"
               type="number"
-              value={form.maxUsers}
-              onChange={(e) => set('maxUsers', Number(e.target.value))}
+              value={form.maxUsers ?? ''}
+              onChange={(e) => set('maxUsers', e.target.value ? Number(e.target.value) : null)}
               fullWidth
+              helperText="Deixe vazio para ilimitado"
+            />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              label="Máx. notas sincronizadas/mês"
+              type="number"
+              value={form.maxNotes ?? ''}
+              onChange={(e) => set('maxNotes', e.target.value ? Number(e.target.value) : null)}
+              fullWidth
+              helperText="Preencha para planos baseados em volume de notas"
             />
           </Grid>
           <Grid size={{ xs: 6 }}>
@@ -192,6 +216,59 @@ export const PlanFormDialog: React.FC<Props> = ({ open, plan, defaultSystem, sys
             />
           </Grid>
         </Grid>
+
+        {/* ── IDs Stripe ── */}
+        <Divider sx={{ my: 2 }} />
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ cursor: 'pointer', py: 0.5 }}
+          onClick={() => setStripeOpen((v) => !v)}
+        >
+          <Typography variant="subtitle2" fontWeight={600} color="text.secondary">
+            IDs Stripe
+          </Typography>
+          {stripeOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+        </Box>
+
+        <Collapse in={stripeOpen}>
+          <Grid container spacing={2} sx={{ mt: 0.5 }}>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                label="Product ID"
+                placeholder="prod_xxxxxxxxxxxx"
+                value={form.stripeProductId ?? ''}
+                onChange={(e) => set('stripeProductId', e.target.value || null)}
+                fullWidth
+                size="small"
+                helperText="Produto no Stripe (prod_…)"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Price ID — Mensal"
+                placeholder="price_xxxxxxxxxxxx"
+                value={form.stripeMonthlyPriceId ?? ''}
+                onChange={(e) => set('stripeMonthlyPriceId', e.target.value || null)}
+                fullWidth
+                size="small"
+                helperText="Preço mensal (price_…)"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Price ID — Anual"
+                placeholder="price_xxxxxxxxxxxx"
+                value={form.stripeAnnualPriceId ?? ''}
+                onChange={(e) => set('stripeAnnualPriceId', e.target.value || null)}
+                fullWidth
+                size="small"
+                helperText="Preço anual (price_…) — opcional"
+              />
+            </Grid>
+          </Grid>
+        </Collapse>
 
         <Divider sx={{ my: 3 }} />
         <Typography variant="subtitle2" fontWeight={600} mb={1}>

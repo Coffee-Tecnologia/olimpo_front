@@ -65,6 +65,14 @@ const UserIcon: React.FC = () => (
   </svg>
 );
 
+const NotesIcon: React.FC = () => (
+  <svg className={styles.limitIcon} width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M2.5 3.5h11M2.5 6.5h11M2.5 9.5h7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.4" />
+    <path d="M12 11v1l.8.8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+  </svg>
+);
+
 const CheckIcon: React.FC = () => (
   <div className={`${styles.featureIcon} ${styles.featureIconCheck}`}>
     <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
@@ -159,14 +167,27 @@ export const PlanCard: React.FC<PlanCardProps> = ({ plan, billingCycle, isSubscr
         <div className={styles.divider} />
 
         <div className={styles.limits}>
-          <div className={styles.limitItem}>
-            <CnpjIcon />
-            Até {plan.maxCnpjs} CNPJs
-          </div>
-          <div className={styles.limitItem}>
-            <UserIcon />
-            Até {plan.maxUsers} usuários
-          </div>
+          {plan.maxNotes !== null && plan.maxNotes !== undefined ? (
+            <div className={styles.limitItem}>
+              <NotesIcon />
+              Até {plan.maxNotes.toLocaleString('pt-BR')} notas/mês
+            </div>
+          ) : (
+            <>
+              {plan.maxCnpjs !== null && plan.maxCnpjs !== undefined && (
+                <div className={styles.limitItem}>
+                  <CnpjIcon />
+                  Até {plan.maxCnpjs} CNPJs
+                </div>
+              )}
+              {plan.maxUsers !== null && plan.maxUsers !== undefined && (
+                <div className={styles.limitItem}>
+                  <UserIcon />
+                  Até {plan.maxUsers} usuários
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <div className={styles.divider} />
