@@ -28,14 +28,14 @@ import { PlanCard } from './PlanCard';
 import styles from './plans.module.scss';
 import { PlansSkeleton } from './PlansSkeleton';
 
-const PLAN_ORDER = ['Degust', 'Starter', 'Pro', 'Enterprise'] as const;
-
+// Enterprise sempre último; demais planos por preço mensal crescente.
 const sortPlans = (plans: Plan[]) =>
-  [...plans].sort(
-    (a, b) =>
-      PLAN_ORDER.indexOf(a.name as (typeof PLAN_ORDER)[number]) -
-      PLAN_ORDER.indexOf(b.name as (typeof PLAN_ORDER)[number]),
-  );
+  [...plans].sort((a, b) => {
+    const aIsEnterprise = a.planType === 'enterprise' ? 1 : 0;
+    const bIsEnterprise = b.planType === 'enterprise' ? 1 : 0;
+    if (aIsEnterprise !== bIsEnterprise) return aIsEnterprise - bIsEnterprise;
+    return a.monthlyPriceCents - b.monthlyPriceCents;
+  });
 
 const sortCreditPacks = (plans: Plan[]) => [...plans].sort((a, b) => (a.creditsAmount ?? 0) - (b.creditsAmount ?? 0));
 
